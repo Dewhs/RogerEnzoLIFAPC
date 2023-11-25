@@ -12,14 +12,18 @@ OBJ = obj
 
 all: $(BIN)/MonProgramme
 
-$(BIN)/MonProgramme: $(OBJ)/main.o $(OBJ)/graphe.o | $(BIN)
+$(BIN)/MonProgramme: $(OBJ)/main.o $(OBJ)/graphe.o $(OBJ)/noeud.o | $(BIN)
 	$(CXX) $(FLAGS) $^ -o $@
 
 $(OBJ)/main.o: $(SRC)/main.cpp $(SRC)/graphe.h | $(OBJ)
 	$(CXX) $(FLAGS) -c $< -o $@
 
-$(OBJ)/graphe.o: $(SRC)/graphe.cpp $(SRC)/graphe.h | $(OBJ)
+$(OBJ)/graphe.o: $(SRC)/graphe.cpp $(SRC)/graphe.h $(SRC)/noeud.h | $(OBJ)
 	$(CXX) $(FLAGS) -c $< -o $@
+
+$(OBJ)/noeud.o: $(SRC)/noeud.cpp $(SRC)/noeud.h | $(OBJ)
+	$(CXX) $(FLAGS) -c $< -o $@
+
 
 
 # Pour créer les dossiers obj et bin si ils n'existent pas

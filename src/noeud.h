@@ -20,6 +20,12 @@ private:
 
 public:
     Noeud();
+    Noeud(unsigned int intensite);
+
+    unsigned int getIntensite();
+    //unsigned int getFlotArcOuest();
+
+
     ~Noeud();
 };
 
