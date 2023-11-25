@@ -5,6 +5,9 @@ struct Arc
     unsigned int flot, capacite, valeur;
 };
 
+#ifndef NOEUD_H
+#define NOEUD_H
+
 class Noeud
 {
 private:
@@ -19,3 +22,5 @@ public:
     Noeud();
     ~Noeud();
 };
+
+#endif // NOEUD_H
