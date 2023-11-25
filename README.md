@@ -1,6 +1,6 @@
 # RogerEnzoLIFAPC
 
-## Conception 
+## Conception
 
 Conception on FigJam :
 <https://www.figma.com/file/HxI14LNnPssUnBXXEPSnBu/diagrame_des_classes?type=whiteboard&node-id=0%3A1&t=zAzpCbIxr9VF0aRo-1>
@@ -10,7 +10,7 @@ Conception on FigJam :
   
 ### Class Diagram
 
-![Preview Class Diagram](https://i.imgur.com/ilI0Tyn.png)
+![Preview Class Diagram](https://i.imgur.com/DnvmfwL.png)
 
 ## Compilation
 
