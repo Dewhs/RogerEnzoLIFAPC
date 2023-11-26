@@ -2,6 +2,7 @@
 
 struct Arc
 {
+    Arc(){valeur = 0; flot = 0; capacite = 0;};
     unsigned int valeur;
     double flot, capacite;
 };

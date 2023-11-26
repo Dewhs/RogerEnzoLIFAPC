@@ -17,7 +17,8 @@ class GrapheImage
         
     void test();
 
-    double calculerCapacite(int posP, int posQ);
+    double calculerCapacite(int intensiteP, int intensiteQ);
+    double calculerCapacitePos(unsigned int posP,unsigned int posQ);
 
 
     public :

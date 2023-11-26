@@ -26,29 +26,30 @@ void GrapheImage::test()
         tblNoeuds[i] = new Noeud(intensites[i]);
     }
 
-    assert(compareDouble(calculerCapacite(0, 1), 2.74879 * pow(10, -43), epsilon));
+    // Test de calculerCapacite avec aroundi à l'ordre de grandeur près
+    assert(compareDouble(calculerCapacitePos(0, 1), 2.74879 * pow(10, -43), epsilon * pow(10, -43)));
     cout << "[OK] [0,0] [1,0]" << endl;
-    assert(compareDouble(calculerCapacite(0, 3), 5.00797 * pow(10, -159), epsilon));
+    assert(compareDouble(calculerCapacitePos(0, 3), 5.00797 * pow(10, -159), epsilon * pow(10, -159)));
     cout << "[OK] [0,0] [0,1]" << endl;
-    assert(compareDouble(calculerCapacite(1, 2), 0, epsilon));
+    assert(compareDouble(calculerCapacitePos(1, 2), 0, epsilon));
     cout << "[OK] [1,0] [2,0]" << endl;
-    assert(compareDouble(calculerCapacite(1, 4), 2.74879 * pow(10, -43), epsilon));
+    assert(compareDouble(calculerCapacitePos(1, 4), 2.74879 * pow(10, -43), epsilon * pow(10, -43)));
     cout << "[OK] [1,0] [1,1]" << endl;
-    assert(compareDouble(calculerCapacite(2, 5), 0, epsilon));
+    assert(compareDouble(calculerCapacitePos(2, 5), 0, epsilon));
     cout << "[OK] [2,0] [2,1]" << endl;
-    assert(compareDouble(calculerCapacite(3, 4), 5.00797 * pow(10, -159), epsilon));
+    assert(compareDouble(calculerCapacitePos(3, 4), 5.00797 * pow(10, -159), epsilon * pow(10, -159)));
     cout << "[OK] [0,1] [1,1]" << endl;
-    assert(compareDouble(calculerCapacite(3, 6), 2.00501 * pow(10, -37), epsilon));
+    assert(compareDouble(calculerCapacitePos(3, 6), 2.00501 * pow(10, -37), epsilon * pow(10, -37)));
     cout << "[OK] [0,1] [0,2]" << endl;
-    assert(compareDouble(calculerCapacite(4, 5), 0, epsilon));
+    assert(compareDouble(calculerCapacitePos(4, 5), 0, epsilon));
     cout << "[OK] [1,1] [2,1]" << endl;
-    assert(compareDouble(calculerCapacite(4, 7), 0, epsilon));
+    assert(compareDouble(calculerCapacitePos(4, 7), 0, epsilon));
     cout << "[OK] [1,1] [1,2]" << endl;
-    assert(compareDouble(calculerCapacite(5, 8), 1.61609 * pow(10, -147), epsilon));
+    assert(compareDouble(calculerCapacitePos(5, 8), 1.61609 * pow(10, -147), epsilon * pow(10, -147)));
     cout << "[OK] [2,1] [2,2]" << endl;
-    assert(compareDouble(calculerCapacite(6, 7), 0, epsilon));
+    assert(compareDouble(calculerCapacitePos(6, 7), 0, epsilon));
     cout << "[OK] [0,2] [1,2]" << endl;
-    assert(compareDouble(calculerCapacite(7, 8), 1, epsilon));
+    assert(compareDouble(calculerCapacitePos(7, 8), 1, epsilon));
     cout << "[OK] [1,2] [2,2]" << endl;
 
     tblNoeuds.clear();
@@ -57,16 +58,15 @@ void GrapheImage::test()
     cout << "[OK] All test passed !" << endl;
 }
 
-double GrapheImage::calculerCapacite(int posP, int posQ)
+double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
     int sigma = 1;
-    int intensiteP = tblNoeuds[posP]->getIntensite();
-    int intensiteQ = tblNoeuds[posQ]->getIntensite();
+    return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
+}
 
-    double capacite = exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
-
-    // cout << "capacite : " << capacite << endl;
-    return capacite;
+double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
+{
+    return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
 }
 
 GrapheImage::~GrapheImage()
