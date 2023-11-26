@@ -2,7 +2,8 @@
 
 struct Arc
 {
-    unsigned int flot, capacite, valeur;
+    unsigned int valeur;
+    double flot, capacite;
 };
 
 #ifndef NOEUD_H
@@ -23,8 +24,7 @@ public:
     Noeud(unsigned int intensite);
 
     unsigned int getIntensite();
-    //unsigned int getFlotArcOuest();
-
+    Arc* getTblArc();
 
     ~Noeud();
 };

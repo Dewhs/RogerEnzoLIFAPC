@@ -15,7 +15,7 @@ class GrapheImage
 
     vector<Noeud*> tblNoeuds;
         
-    void Test();
+    void test();
 
     double calculerCapacite(int posP, int posQ);
 

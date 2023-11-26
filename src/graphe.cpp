@@ -11,10 +11,10 @@ bool GrapheImage::compareDouble(double a, double b, double epsilon)
 GrapheImage::GrapheImage()
 {
     cout << "GrapheImage" << endl;
-    Test();
+    test();
 }
 
-void GrapheImage::Test()
+void GrapheImage::test()
 {
     const unsigned int testSize = 9;
     const double epsilon = 0.00001;

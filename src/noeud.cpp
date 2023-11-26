@@ -15,6 +15,11 @@ unsigned int Noeud::getIntensite()
     return intensite;
 }
 
+Arc* Noeud::getTblArc()
+{
+    return tblArc;
+}
+
 Noeud::~Noeud()
 {
 }
