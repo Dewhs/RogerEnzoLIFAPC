@@ -1,8 +1,6 @@
-
-
 struct Arc
 {
-    Arc(){valeur = 0; flot = 0; capacite = 0;};
+    Arc() : valeur(0), flot(0), capacite(0) {} // Initialisation des membres dans le constructeur
     unsigned int valeur;
     double flot, capacite;
 };
@@ -13,21 +11,18 @@ struct Arc
 class Noeud
 {
 private:
-    // intensité lumineuse
     unsigned int intensite;
-
-    // valuation des 4 arcs (Ouest ,Est ,Nord ,Sud)
-    Arc tblArc[4];
-    Arc s, p;
+    Arc* tblArc[4]; 
 
 public:
-    Noeud();
+    Noeud(); // Constructeur par défaut
     Noeud(unsigned int intensite);
 
-    unsigned int getIntensite();
-    Arc* getTblArc();
+    unsigned int getIntensite() const; // Getter sur l'intensité
+    Arc*& getTblArc(); // Getter sur le tableau
+    void setTblArc(const Arc* nouveauTbl[4]); // Setter sur le tableau
 
-    ~Noeud();
+    ~Noeud(); // Destructeur
 };
 
 #endif // NOEUD_H

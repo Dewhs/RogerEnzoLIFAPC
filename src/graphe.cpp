@@ -2,6 +2,62 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <sstream>
+
+void GrapheImage::imageVersGraphe(const string &nomFichier)
+{
+    // Ouverture du fichier en lecture
+    ifstream fichier(nomFichier, std::ios::binary);
+
+    // Vérification si l'ouverture du fichier a réussi
+    if (!fichier.is_open())
+    {
+        cerr << "Impossible d'ouvrir le fichier." << endl;
+        EXIT_FAILURE; // Erreur
+    }
+
+    string ligne;
+    unsigned int largeur, hauteur, intensiteMax;
+
+    // Lecture de l'en-tête PGM
+    getline(fichier, ligne); // Lecture de la première ligne (doit être "P2" pour un fichier PGM)
+    if (ligne != "P2")
+    {
+        cerr << "Format de fichier incorrect." << endl;
+        fichier.close(); // Fermeture du fichier
+        EXIT_FAILURE;    // Erreur
+    }
+
+    // Lecture et stockage de (largeur, hauteur, intensité maximale)
+    fichier >> largeur >> hauteur >> intensiteMax;
+
+    // On saute d’une ligne
+    getline(fichier, ligne);
+
+    // Lecture des intensités des pixels
+    // Ajout des arcs pour chaque pixels
+    unsigned int pixelValue;
+    Arc * nouveauTblArc[4];
+    for (unsigned int i = 0; i < (largeur * hauteur); i++)
+    {
+        fichier >> pixelValue; // Lecture des pixels mot par mot
+
+        // assert (pixelValue < intensiteMax);
+        Noeud* nouveauNoeud = new Noeud(pixelValue);
+        this->calculerVoisins(i, largeur, hauteur, *nouveauTblArc);
+        nouveauNoeud->setTblArc(nouveauTblArc);
+        //Ajout du pixel dans le tableau
+        this->tblNoeuds.push_back(nouveauNoeud);
+    }
+
+    // Fermeture du fichier
+    fichier.close();
+}
+
 
 bool GrapheImage::compareDouble(double a, double b, double epsilon)
 {
