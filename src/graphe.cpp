@@ -54,6 +54,24 @@ void GrapheImage::test()
 
     tblNoeuds.clear();
 
+    // Test assignation
+    for (unsigned int i = 0; i < 9; i++)
+    {
+        if (i == 0)
+        {
+            double ouest = calculerCapacite(intensites[i], intensites[i + 1]);
+            double est = INFINITY;
+            double nord = INFINITY;
+            double sud = calculerCapacite(intensites[i], intensites[i + int(sqrt(testSize))]);
+            cout << "Ouest : " << ouest << endl;
+            cout << "Est : " << est << endl;
+            cout << "Nord : " << nord << endl;
+            cout << "Sud : " << sud << endl;
+        }
+
+        // tblNoeuds.push_back(new Noeud(intensites[i]));
+    }
+
     cout << "##############################" << endl;
     cout << "[OK] All test passed !" << endl;
 }
