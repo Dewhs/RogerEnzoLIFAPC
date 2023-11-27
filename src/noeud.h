@@ -25,6 +25,7 @@ private:
     Arc* tblArc[4]; 
 
 public:
+
     Noeud(); // Constructeur par défaut
     Noeud(unsigned int intensite); // Construteur avec l'intensité en paramètre
 

@@ -2,8 +2,21 @@
 #include <iostream>
 using namespace std;
 
+
+
+Arc& Arc::operator=(const Arc& autre) 
+{
+        // Vérification pour éviter l'auto-affectation
+        if (this != &autre) {
+            valeur = autre.valeur;
+            flot = autre.flot;
+            capacite = autre.capacite;
+        }
+        return *this;
+}
+
 Arc::~Arc(){
-    cout << "Arc detruit" << endl;
+    // cout << "Destructeur Arc" << endl;
 }
 
 Noeud::Noeud() {
@@ -29,6 +42,7 @@ Noeud::~Noeud() {
         delete tblArc[i];
         tblArc[i] = nullptr;
     }
+    // cout << "Destructeur Noeud" << endl;
 }
 
 unsigned int Noeud::getIntensite() const
@@ -43,20 +57,6 @@ Arc*& Noeud::getTblArc()
 
 void Noeud::setTblArc(Arc* nouveauTbl[4]) {
     for (int i = 0; i < 4; ++i) {
-        // Vérification que chaque élément du nouveau tableau n'est pas nul avant de le copier
-        if (nouveauTbl[i] != nullptr) {
-            // Si un nouvel arc est valide, copie de ses valeurs dans le tableau tblArc
-            if (tblArc[i] == nullptr) {
-                tblArc[i] = new Arc(); // Allouer de la mémoire si l'arc actuel est nul
-            }
-            // Copie des valeurs de l'arc dans tblArc
-            tblArc[i]->valeur = nouveauTbl[i]->valeur;
-            tblArc[i]->flot = nouveauTbl[i]->flot;
-            tblArc[i]->capacite = nouveauTbl[i]->capacite;
-        }
-    }
-    // Suppression du tableau nouveauTbl après le traitement
-    for (int i = 0; i < 4; ++i) {
-        delete nouveauTbl[i];
+        this->tblArc[i]->valeur = nouveauTbl[i]->valeur;
     }
 }

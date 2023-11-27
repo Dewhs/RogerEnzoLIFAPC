@@ -5,6 +5,6 @@ int main(int argc, char const *argv[])
 {
     
     GrapheImage g;
-    g.testCalculVoisins();
+    g.testImageVersGraphe();
     return 0;
 }
