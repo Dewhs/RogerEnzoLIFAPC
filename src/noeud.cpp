@@ -1,6 +1,10 @@
 #include "noeud.h"
-
+#include <iostream>
 using namespace std;
+
+Arc::~Arc(){
+    cout << "Arc detruit" << endl;
+}
 
 Noeud::Noeud() {
     this->intensite = 0;
@@ -37,7 +41,7 @@ Arc*& Noeud::getTblArc()
     return *tblArc;
 }
 
-void Noeud::setTblArc(const Arc* nouveauTbl[4]) {
+void Noeud::setTblArc(Arc* nouveauTbl[4]) {
     for (int i = 0; i < 4; ++i) {
         // Vérification que chaque élément du nouveau tableau n'est pas nul avant de le copier
         if (nouveauTbl[i] != nullptr) {

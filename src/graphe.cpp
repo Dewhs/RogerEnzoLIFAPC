@@ -8,6 +8,31 @@
 #include <string>
 #include <sstream>
 
+using namespace std;
+
+
+Arc& Arc::operator=(const Arc& autre) 
+{
+        // Vérification pour éviter l'auto-affectation
+        if (this != &autre) {
+            valeur = autre.valeur;
+            flot = autre.flot;
+            capacite = autre.capacite;
+        }
+        return *this;
+}
+
+GrapheImage::GrapheImage()
+{
+    cout << "GrapheImage" << endl;
+    test();
+}
+
+GrapheImage::GrapheImage(const string& nomFichier)
+{
+    this->imageVersGraphe(nomFichier);
+}
+
 void GrapheImage::imageVersGraphe(const string &nomFichier)
 {
     // Ouverture du fichier en lecture
@@ -48,7 +73,7 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
 
         // assert (pixelValue < intensiteMax);
         Noeud* nouveauNoeud = new Noeud(pixelValue);
-        this->calculerVoisins(i, largeur, hauteur, *nouveauTblArc);
+        this->calculerVoisins(i, largeur, hauteur, nouveauTblArc);
         nouveauNoeud->setTblArc(nouveauTblArc);
         //Ajout du pixel dans le tableau
         this->tblNoeuds.push_back(nouveauNoeud);
@@ -58,16 +83,123 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     fichier.close();
 }
 
+void GrapheImage::calculerVoisins(const unsigned int indiceNoeud, const unsigned int largeur, 
+const unsigned int hauteur,  Arc* tblArc[4]) 
+{   
+        Arc* voisinsGauche = new Arc(indiceNoeud-1, 0, 0);
+        Arc* voisinsDroite = new Arc(indiceNoeud+1, 0, 0);
+        Arc* voisinsHaut = new Arc(indiceNoeud-largeur, 0, 0);
+        Arc* voisinsBas = new Arc(indiceNoeud+largeur, 0, 0);
+        // Test si le neoud est un bord gauche
+        if( (indiceNoeud % largeur) == 0){
+            //Test si c'est le coin en haut a gauche
+            if(indiceNoeud  < largeur){
+                voisinsHaut->valeur = INFINITY;
+            }
+            //Test si c'est le coin bas gauche
+            if(indiceNoeud >= (hauteur -1) * largeur){
+                voisinsBas->valeur = INFINITY;
+            }
+            voisinsGauche->valeur = INFINITY;
+            tblArc[0] = voisinsGauche;
+            tblArc[1] = voisinsDroite;
+            tblArc[2] = voisinsHaut;
+            tblArc[3] = voisinsBas;
+        }
+
+
+        // Test si le noeud est un bord droit
+        else if ((indiceNoeud + 1) % largeur == 0){
+            //Test si c'est le coin en haut a droite
+            if(indiceNoeud < largeur){
+                voisinsHaut->valeur = INFINITY;
+            }
+            //Test si c'est le coin en bas droite
+            if (indiceNoeud >= (hauteur -1) * largeur)
+            {
+                voisinsBas->valeur = INFINITY;
+            }
+            voisinsDroite->valeur = INFINITY;
+            tblArc[0] = voisinsGauche;
+            tblArc[1] = voisinsDroite;
+            tblArc[2] = voisinsHaut;
+            tblArc[3] = voisinsBas;
+        }
+
+        // Test si le noeud est un bord haut
+        else if (indiceNoeud < largeur){
+            cout << "je suis la !" << endl;
+            cout <<"mon voisin du haut : " << voisinsHaut << endl;
+            voisinsHaut->valeur = INFINITY;
+            tblArc[0] = voisinsGauche;
+            tblArc[1] = voisinsDroite;
+            tblArc[2] = voisinsHaut;
+            tblArc[3] = voisinsBas;
+        }
+
+        // Test si le noeud est un bord du bas
+        else if (indiceNoeud >= (hauteur -1) * largeur){
+            voisinsBas->valeur = INFINITY;
+            tblArc[0] = voisinsGauche;
+            tblArc[1] = voisinsDroite;
+            tblArc[2] = voisinsHaut;
+            tblArc[3] = voisinsBas;
+        }
+}
+
+void GrapheImage::testCalculVoisins()
+{
+    cout << "#############################" << endl;
+    cout << "BEGIN TEST CALCUL VOISINS" << endl;
+    Arc* tblArcTest [4];
+    // On effectue le test sur une image 2*2
+    this->calculerVoisins(0, 2, 2, tblArcTest);
+    assert(tblArcTest[0]->valeur == INFINITY);
+    assert(tblArcTest[1]->valeur == 1);
+    assert(tblArcTest[2]->valeur == INFINITY);
+    assert(tblArcTest[3]->valeur == 2);
+    cout << "[1, inf, 2, inf]" << endl;
+
+    this->calculerVoisins(1, 2, 2, tblArcTest);
+    assert(tblArcTest[0]->valeur == 0);
+    assert(tblArcTest[1]->valeur == INFINITY);
+    assert(tblArcTest[2]->valeur == INFINITY);
+    assert(tblArcTest[3]->valeur == 3);
+    cout << "[0, inf, inf, 3]" << endl;
+
+    this->calculerVoisins(2, 2, 2, tblArcTest);
+    assert(tblArcTest[0]->valeur == INFINITY);
+    assert(tblArcTest[1]->valeur == 3);
+    assert(tblArcTest[2]->valeur == 0);
+    assert(tblArcTest[3]->valeur == INFINITY);
+    cout << "[inf, 3, 0, inf]" << endl;
+
+
+    this->calculerVoisins(3, 2, 2, tblArcTest);
+    assert(tblArcTest[0]->valeur == 2);
+    assert(tblArcTest[1]->valeur == INFINITY);
+    assert(tblArcTest[2]->valeur == 1);
+    assert(tblArcTest[3]->valeur == INFINITY);
+    cout << "[2, inf, 1, inf]" << endl;
+
+    cout << "#############################" << endl;
+    cout << "TEST PASSED !" << endl;
+}
 
 bool GrapheImage::compareDouble(double a, double b, double epsilon)
 {
     return fabs(a - b) < epsilon;
 }
 
-GrapheImage::GrapheImage()
+double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
-    cout << "GrapheImage" << endl;
-    test();
+    int sigma = 1;
+    return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
+}
+
+double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
+{
+    return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
 }
 
 void GrapheImage::test()
@@ -130,17 +262,6 @@ void GrapheImage::test()
 
     cout << "##############################" << endl;
     cout << "[OK] All test passed !" << endl;
-}
-
-double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
-{
-    int sigma = 1;
-    return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
-}
-
-double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
-{
-    return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
 }
 
 GrapheImage::~GrapheImage()
