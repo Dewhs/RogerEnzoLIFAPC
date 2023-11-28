@@ -57,15 +57,15 @@ void GrapheImage::imageVersGraphe(const string& nomFichier)
 
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
-    unsigned int pixelValue;
+    unsigned int valeurPixel;
     unsigned int indiceNoeud = 0;
     Arc * nouveauTblArc[4];
-    while (fichier >> pixelValue)
+    while (fichier >> valeurPixel)
     {
         // Test si le pixel est correct
-        assert (pixelValue < intensiteMax);
+        assert (valeurPixel < intensiteMax);
         // Création d'un nouveau pixel sur le tas
-        Noeud* nouveauNoeud = new Noeud(pixelValue);
+        Noeud* nouveauNoeud = new Noeud(valeurPixel);
         // On calcule les voisins du pixel
         this->calculerVoisins(indiceNoeud, largeur, hauteur, nouveauTblArc);
         // On modifie le tableau des voisins du pixel
@@ -126,11 +126,11 @@ const unsigned int hauteur,  Arc* tblArc[4])
 
         // Test si le noeud est un bord droit
         else if ((indiceNoeud + 1) % largeur == 0){
-            //Test si c'est le coin en haut a droite
+            //Test si c'est le coin en haut à droite
             if(indiceNoeud < largeur){
                 voisinsHaut->valeur = INFINITY;
             }
-            //Test si c'est le coin en bas droite
+            //Test si c'est le coin en bas à droite
             if (indiceNoeud >= (hauteur -1) * largeur)
             {
                 voisinsBas->valeur = INFINITY;
@@ -142,7 +142,7 @@ const unsigned int hauteur,  Arc* tblArc[4])
             tblArc[3] = voisinsBas;
         }
 
-        // Test si le noeud est un bord haut
+        // Test si le noeud est un bord du haut
         else if (indiceNoeud < largeur){
             voisinsHaut->valeur = INFINITY;
             tblArc[0] = voisinsGauche;
