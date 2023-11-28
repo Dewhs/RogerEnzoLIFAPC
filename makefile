@@ -25,7 +25,6 @@ $(OBJ)/noeud.o: $(SRC)/noeud.cpp $(SRC)/noeud.h | $(OBJ)
 	$(CXX) $(FLAGS) -c $< -o $@
 
 
-
 # Pour créer les dossiers obj et bin si ils n'existent pas
 $(OBJ) $(BIN):
 	mkdir -p $@

@@ -37,7 +37,11 @@ void GrapheImage::imageVersGraphe(const string& nomFichier)
     unsigned int largeur, hauteur, intensiteMax;
 
     // Lecture de l'en-tête PGM
-    getline(fichier, ligne); // Lecture de la première ligne (doit être "P2" pour un fichier PGM)
+    //getline(fichier, ligne); // Lecture de la première ligne (doit être "P2" pour un fichier PGM)
+
+    //Ton GetLine devait récupérer la ligne P2 mais avec des espaces ou des merdes devant
+    fichier >> ligne;
+
     if (ligne != "P2")
     {
         cerr << "Format de fichier incorrect." << endl;
@@ -49,7 +53,7 @@ void GrapheImage::imageVersGraphe(const string& nomFichier)
     fichier >> largeur >> hauteur >> intensiteMax;
 
     // On saute d’une ligne
-    getline(fichier, ligne);
+    getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
 
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
@@ -88,7 +92,7 @@ void GrapheImage::testImageVersGraphe(){
 
     // Test des voisins du coin gauche
     assert(this->tblNoeuds[0]->getTblArc()[0].valeur == INFINITY);
-    assert(this->tblNoeuds[0]->getTblArc()[1].valeur == 1);
+    assert(this->tblNoeuds[0]->getTblArc()[1].valeur == 1); //fait un cout tu verra que ton 1 est affecter dans des variables de ton arc mais juste pas à valeur
     assert(this->tblNoeuds[0]->getTblArc()[2].valeur == INFINITY);
     assert(this->tblNoeuds[0]->getTblArc()[3].valeur == 3);
 
