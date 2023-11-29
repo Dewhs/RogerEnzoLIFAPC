@@ -67,5 +67,4 @@ void Noeud::setTblArc(Arc *nouveauTbl[4])
     {
         this->tblArc[i]->valeur = nouveauTbl[i]->valeur;
     }
-    cout << "tblArc [1] : " << tblArc[1]->valeur << endl;
 }

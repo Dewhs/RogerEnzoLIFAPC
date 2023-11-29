@@ -13,12 +13,21 @@ using namespace std;
 GrapheImage::GrapheImage()
 {
     cout << "GrapheImage" << endl;
-    // test();
+    test();
+    largeur = 0; 
+    hauteur = 0;
+    intensiteMax = 0;
 }
 
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
+}
+
+void GrapheImage::copieImage(const string &nomFichier)
+{
+    this->imageVersGraphe(nomFichier);
+    this->grapheVersImage(nomFichier);
 }
 
 void GrapheImage::imageVersGraphe(const string &nomFichier)
@@ -34,12 +43,8 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     }
 
     string ligne;
-    unsigned int largeur, hauteur, intensiteMax;
 
     // Lecture de l'en-tête PGM
-    // getline(fichier, ligne); // Lecture de la première ligne (doit être "P2" pour un fichier PGM)
-
-    // Ton GetLine devait récupérer la ligne P2 mais avec des espaces ou des merdes devant
     fichier >> ligne;
 
     if (ligne != "P2")
@@ -51,9 +56,13 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
 
     // Lecture et stockage de (largeur, hauteur, intensité maximale)
     fichier >> largeur >> hauteur >> intensiteMax;
+    cout << "Largeur : " << largeur << endl;
+    cout << "Hauteur : " << hauteur << endl;
+    cout << "Intensité maximale : " << intensiteMax << endl;
+
 
     // On saute d’une ligne
-     //getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
+    // getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
 
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
@@ -78,11 +87,8 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     fichier.close();
 }
 
-void GrapheImage::testImageVersGraphe()
+void GrapheImage::testImageVersGraphe() // à finir
 {
-    cout << "##########################" << endl;
-    cout << "BEGIN TEST IMAGE VERS GRAPHE" << endl;
-
     this->imageVersGraphe("src/imagePgmTest.pgm");
 
     // Test de la lecture du fichier (début)
@@ -97,8 +103,46 @@ void GrapheImage::testImageVersGraphe()
     assert(this->tblNoeuds[0]->getTblArc(2)->valeur == INFINITY);
     assert(this->tblNoeuds[0]->getTblArc(3)->valeur == 3);
 
-    // Test des vois
+    // Test des voisins du coin droit
+    assert(this->tblNoeuds[2]->getTblArc(0)->valeur == 1);
+    assert(this->tblNoeuds[2]->getTblArc(1)->valeur == INFINITY);
+    assert(this->tblNoeuds[2]->getTblArc(2)->valeur == INFINITY);
+    assert(this->tblNoeuds[2]->getTblArc(3)->valeur == 5);
+
+    cout << "[OK] Image vers Graphe !" << endl;
 }
+
+
+void GrapheImage::grapheVersImage(const string &nomFichier)
+{
+    // Ouverture du fichier en écriture
+    ofstream fichier(nomFichier + " Copie", std::ios::binary);
+
+    // Vérification si l'ouverture du fichier a réussi
+    if (!fichier.is_open())
+    {
+        cerr << "Impossible d'ouvrir le fichier." << endl;
+        EXIT_FAILURE; // Erreur
+    }
+
+    // Ecriture de l'en-tête PGM
+    fichier << "P2" << endl;
+    fichier << "# Image PGM" << endl;
+    fichier << "# Générée par le programme" << endl;
+    fichier << largeur << " " << hauteur << endl;
+    fichier << intensiteMax << endl;
+    
+    for (unsigned int j = 0; j < hauteur; j++)
+    {
+        for (unsigned int i = 0; i < largeur; i++)
+        {
+            fichier << tblNoeuds[i + j * largeur]->getIntensite() << " ";
+        }
+        fichier << endl;
+    }
+}
+
+
 
 void GrapheImage::calculerVoisins(const unsigned int indiceNoeud, const unsigned int largeur,
                                   const unsigned int hauteur, Arc *tblArc[4])
@@ -170,8 +214,6 @@ void GrapheImage::calculerVoisins(const unsigned int indiceNoeud, const unsigned
 
 void GrapheImage::testCalculVoisins()
 {
-    cout << "#############################" << endl;
-    cout << "BEGIN TEST CALCUL VOISINS" << endl;
     Arc *tblArcTest[4];
     // On effectue le test sur une image 2*2
     this->calculerVoisins(0, 2, 2, tblArcTest);
@@ -179,36 +221,30 @@ void GrapheImage::testCalculVoisins()
     assert(tblArcTest[1]->valeur == 1);
     assert(tblArcTest[2]->valeur == INFINITY);
     assert(tblArcTest[3]->valeur == 2);
-    cout << "[1, inf, 2, inf]" << endl;
+    // cout << "[1, inf, 2, inf]" << endl;
 
     this->calculerVoisins(1, 2, 2, tblArcTest);
     assert(tblArcTest[0]->valeur == 0);
     assert(tblArcTest[1]->valeur == INFINITY);
     assert(tblArcTest[2]->valeur == INFINITY);
     assert(tblArcTest[3]->valeur == 3);
-    cout << "[0, inf, inf, 3]" << endl;
+    // cout << "[0, inf, inf, 3]" << endl;
 
     this->calculerVoisins(2, 2, 2, tblArcTest);
     assert(tblArcTest[0]->valeur == INFINITY);
     assert(tblArcTest[1]->valeur == 3);
     assert(tblArcTest[2]->valeur == 0);
     assert(tblArcTest[3]->valeur == INFINITY);
-    cout << "[inf, 3, 0, inf]" << endl;
+    // cout << "[inf, 3, 0, inf]" << endl;
 
     this->calculerVoisins(3, 2, 2, tblArcTest);
     assert(tblArcTest[0]->valeur == 2);
     assert(tblArcTest[1]->valeur == INFINITY);
     assert(tblArcTest[2]->valeur == 1);
     assert(tblArcTest[3]->valeur == INFINITY);
-    cout << "[2, inf, 1, inf]" << endl;
+    // cout << "[2, inf, 1, inf]" << endl;
 
-    cout << "#############################" << endl;
-    cout << "TEST PASSED !" << endl;
-}
-
-bool GrapheImage::compareDouble(double a, double b, double epsilon)
-{
-    return fabs(a - b) < epsilon;
+    cout << "[OK] Calcul voisin !" << endl;
 }
 
 double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
@@ -222,7 +258,7 @@ double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
     return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
 }
 
-void GrapheImage::test()
+void GrapheImage::testCalculerCapacite()
 {
     const unsigned int testSize = 9;
     const double epsilon = 0.00001;
@@ -236,51 +272,46 @@ void GrapheImage::test()
 
     // Test de calculerCapacite avec aroundi à l'ordre de grandeur près
     assert(compareDouble(calculerCapacitePos(0, 1), 2.74879 * pow(10, -43), epsilon * pow(10, -43)));
-    cout << "[OK] [0,0] [1,0]" << endl;
+    // cout << "[OK] [0,0] [1,0]" << endl;
     assert(compareDouble(calculerCapacitePos(0, 3), 5.00797 * pow(10, -159), epsilon * pow(10, -159)));
-    cout << "[OK] [0,0] [0,1]" << endl;
+    // cout << "[OK] [0,0] [0,1]" << endl;
     assert(compareDouble(calculerCapacitePos(1, 2), 0, epsilon));
-    cout << "[OK] [1,0] [2,0]" << endl;
+    // cout << "[OK] [1,0] [2,0]" << endl;
     assert(compareDouble(calculerCapacitePos(1, 4), 2.74879 * pow(10, -43), epsilon * pow(10, -43)));
-    cout << "[OK] [1,0] [1,1]" << endl;
+    // cout << "[OK] [1,0] [1,1]" << endl;
     assert(compareDouble(calculerCapacitePos(2, 5), 0, epsilon));
-    cout << "[OK] [2,0] [2,1]" << endl;
+    // cout << "[OK] [2,0] [2,1]" << endl;
     assert(compareDouble(calculerCapacitePos(3, 4), 5.00797 * pow(10, -159), epsilon * pow(10, -159)));
-    cout << "[OK] [0,1] [1,1]" << endl;
+    // cout << "[OK] [0,1] [1,1]" << endl;
     assert(compareDouble(calculerCapacitePos(3, 6), 2.00501 * pow(10, -37), epsilon * pow(10, -37)));
-    cout << "[OK] [0,1] [0,2]" << endl;
+    // cout << "[OK] [0,1] [0,2]" << endl;
     assert(compareDouble(calculerCapacitePos(4, 5), 0, epsilon));
-    cout << "[OK] [1,1] [2,1]" << endl;
+    // cout << "[OK] [1,1] [2,1]" << endl;
     assert(compareDouble(calculerCapacitePos(4, 7), 0, epsilon));
-    cout << "[OK] [1,1] [1,2]" << endl;
+    // cout << "[OK] [1,1] [1,2]" << endl;
     assert(compareDouble(calculerCapacitePos(5, 8), 1.61609 * pow(10, -147), epsilon * pow(10, -147)));
-    cout << "[OK] [2,1] [2,2]" << endl;
+    // cout << "[OK] [2,1] [2,2]" << endl;
     assert(compareDouble(calculerCapacitePos(6, 7), 0, epsilon));
-    cout << "[OK] [0,2] [1,2]" << endl;
+    // cout << "[OK] [0,2] [1,2]" << endl;
     assert(compareDouble(calculerCapacitePos(7, 8), 1, epsilon));
-    cout << "[OK] [1,2] [2,2]" << endl;
+    // cout << "[OK] [1,2] [2,2]" << endl;
 
     tblNoeuds.clear();
 
-    // Test assignation
-    for (unsigned int i = 0; i < 9; i++)
-    {
-        if (i == 0)
-        {
-            double ouest = calculerCapacite(intensites[i], intensites[i + 1]);
-            double est = INFINITY;
-            double nord = INFINITY;
-            double sud = calculerCapacite(intensites[i], intensites[i + int(sqrt(testSize))]);
-            cout << "Ouest : " << ouest << endl;
-            cout << "Est : " << est << endl;
-            cout << "Nord : " << nord << endl;
-            cout << "Sud : " << sud << endl;
-        }
+    cout << "[OK] Calcul Capacite !" << endl;
+}
 
-        // tblNoeuds.push_back(new Noeud(intensites[i]));
-    }
+void GrapheImage::test()
+{
 
     cout << "##############################" << endl;
+    cout << "Tests" << endl;
+
+    testImageVersGraphe();
+    testCalculVoisins();
+    testCalculerCapacite();
+
+    cout << "--------------------------" << endl;
     cout << "[OK] All test passed !" << endl;
 }
 
@@ -296,3 +327,37 @@ GrapheImage::~GrapheImage()
     // cout << this->tblNoeuds.size() << endl;
     // cout << "Destructeur Graphe" << endl;
 }
+
+bool GrapheImage::compareDouble(double a, double b, double epsilon)
+{
+    return fabs(a - b) < epsilon;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// Test assignation
+/*for (unsigned int i = 0; i < 9; i++)
+ {
+     if (i == 0)
+     {
+         double ouest = calculerCapacite(intensites[i], intensites[i + 1]);
+         double est = INFINITY;
+         double nord = INFINITY;
+         double sud = calculerCapacite(intensites[i], intensites[i + int(sqrt(testSize))]);
+         cout << "Ouest : " << ouest << endl;
+         cout << "Est : " << est << endl;
+         cout << "Nord : " << nord << endl;
+         cout << "Sud : " << sud << endl;
+     }
+
+     // tblNoeuds.push_back(new Noeud(intensites[i]));
+ }*/

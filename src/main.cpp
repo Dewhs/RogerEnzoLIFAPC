@@ -5,6 +5,6 @@ int main(int argc, char const *argv[])
 {
     
     GrapheImage g;
-    g.testImageVersGraphe();
+    g.copieImage("src/imagePgmTest.pgm");
     return 0;
 }
