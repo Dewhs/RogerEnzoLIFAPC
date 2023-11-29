@@ -1,15 +1,16 @@
-struct Arc {
+struct Arc
+{
     // Constructeur prenant des valeurs initiales en paramètres
     Arc(double valeur = 0, double flot = 0.0, double capacite = 0.0)
         : valeur(valeur), flot(flot), capacite(capacite) {}
 
     // Surcharge de l'opérateur '='
-    Arc& operator=(const Arc& autre);
+    Arc &operator=(const Arc &autre);
 
-    //Destructeur
+    // Destructeur
     ~Arc();
 
-    //Données-membres
+    // Données-membres
     double valeur, flot, capacite;
 };
 
@@ -20,20 +21,19 @@ class Noeud
 {
 
 private:
-    //Données-membres
+    // Données-membres
     unsigned int intensite;
-    Arc* tblArc[4]; 
+    Arc *tblArc[4];
 
 public:
-
-    Noeud(); // Constructeur par défaut
+    Noeud();                       // Constructeur par défaut
     Noeud(unsigned int intensite); // Construteur avec l'intensité en paramètre
 
     unsigned int getIntensite() const; // Getter sur l'intensité
 
-    Arc*& getTblArc(); // Getter sur le tableau
+    Arc *getTblArc(const unsigned int i); // Getter sur 1 élément du tableau
 
-    void setTblArc(Arc* nouveauTbl[4]); // Setter sur le tableau
+    void setTblArc(Arc *nouveauTbl[4]); // Setter sur le tableau
 
     ~Noeud(); // Destructeur
 };
