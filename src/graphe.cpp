@@ -22,6 +22,7 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
+    this->affichageGrille();
 }
 
 void GrapheImage::copieImage(const string &nomFichier)
@@ -112,7 +113,6 @@ void GrapheImage::testImageVersGraphe() // à finir
     cout << "[OK] Image vers Graphe !" << endl;
 }
 
-
 void GrapheImage::grapheVersImage(const string &nomFichier)
 {
     // Ouverture du fichier en écriture
@@ -141,8 +141,6 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
         fichier << endl;
     }
 }
-
-
 
 void GrapheImage::calculerVoisins(const unsigned int indiceNoeud, const unsigned int largeur,
                                   const unsigned int hauteur, Arc *tblArc[4])
@@ -315,6 +313,27 @@ void GrapheImage::test()
     cout << "[OK] All test passed !" << endl;
 }
 
+void GrapheImage::affichageGrille() const
+{
+        unsigned int indiceLargeur = 0;
+        unsigned int indiceNoeud = 0;
+        while(indiceNoeud < this->tblNoeuds.size())
+        {
+                if(indiceLargeur >= this->largeur)
+                {
+                        // Saute une ligne
+                        cout << "" << endl;
+                        // Remise a zero
+                        indiceLargeur = 0;
+                }
+                //Affichage intensite avec un espace en plus
+                cout << this->tblNoeuds[indiceNoeud]->getIntensite() << " ";
+                indiceLargeur ++; indiceNoeud ++;
+        }
+        // Ajout du endline (c'est plus jolie)
+        cout << "" << endl;
+}
+
 GrapheImage::~GrapheImage()
 {
     unsigned int i = 0;
@@ -332,17 +351,6 @@ bool GrapheImage::compareDouble(double a, double b, double epsilon)
 {
     return fabs(a - b) < epsilon;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // Test assignation
 /*for (unsigned int i = 0; i < 9; i++)

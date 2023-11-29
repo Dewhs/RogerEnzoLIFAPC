@@ -42,6 +42,7 @@ private:
 public:
     GrapheImage();
     GrapheImage(const string &nomFichier);
+    void affichageGrille() const;
     void copieImage(const string &nomFichier);
     ~GrapheImage();
 };
