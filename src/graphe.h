@@ -21,10 +21,18 @@ private:
     // Fonction qui construit l'image à partir du graphe
     void grapheVersImage(const string &nomFichier);
 
-    // Fonction qui calcule les voisins d'un pixel
-    void calculerVoisins(const unsigned int indiceNoeud, const unsigned int largeur,
-                         const unsigned int hauteur, Arc *tblArc[4]);
+    // Fonction qui calcule l'indice d'un noeud dans le tableau
+    unsigned int posNoeud(const unsigned int& i, const unsigned int& j) const;
 
+    //Fonction qui calcule les voisins d'un noeud
+    Arc* estP(const unsigned int& i, const unsigned int& j);
+
+    Arc* ouestP(const unsigned int& i, const unsigned int& j);
+    
+    Arc* nordP(const unsigned int& i, const unsigned int& j);
+    
+    Arc* sudP(const unsigned int& i, const unsigned int& j);
+    
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
     double calculerCapacitePos(unsigned int posP, unsigned int posQ);

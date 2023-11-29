@@ -16,6 +16,9 @@ Arc &Arc::operator=(const Arc &autre)
 
 Arc::~Arc()
 {
+    this->capacite = 0;
+    this->flot = 0;
+    this->valeur = 0;
     // cout << "Destructeur Arc" << endl;
 }
 
@@ -35,7 +38,15 @@ Noeud::Noeud(unsigned int intensite)
     // Allocation dynamique d'un tableau d'Arc avec 4 éléments
     for (int i = 0; i < 4; ++i)
     {
-        tblArc[i] = new Arc();
+        this->tblArc[i] = new Arc();
+    }
+}
+
+Noeud::Noeud(unsigned int intensite, Arc* tabArc[4])
+{
+    this->intensite = intensite;
+    for(unsigned int i = 0; i < 4; i++){
+        this->tblArc[i] = tabArc[i];
     }
 }
 

@@ -22,12 +22,14 @@ class Noeud
 
 private:
     // Données-membres
-    unsigned int intensite;
     Arc *tblArc[4];
+    unsigned int intensite;
 
 public:
+
     Noeud();                       // Constructeur par défaut
     Noeud(unsigned int intensite); // Construteur avec l'intensité en paramètre
+    Noeud(unsigned int intensite, Arc* tabArc[4]); // Constructeur avec l'intensité et le tableau des voisin en parameter
 
     unsigned int getIntensite() const; // Getter sur l'intensité
 

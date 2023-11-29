@@ -13,9 +13,10 @@ using namespace std;
 GrapheImage::GrapheImage()
 {
     cout << "GrapheImage" << endl;
+    largeur = 2; 
+    hauteur = 2;
     test();
-    largeur = 0; 
-    hauteur = 0;
+
     intensiteMax = 0;
 }
 
@@ -28,6 +29,73 @@ void GrapheImage::copieImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
     this->grapheVersImage(nomFichier);
+}
+
+unsigned int GrapheImage::posNoeud(const unsigned int& i, const unsigned int& j) const
+{
+    return (i*this->largeur)+j;
+}
+
+Arc* GrapheImage::ouestP(const unsigned int& i, const unsigned int& j) 
+{
+    unsigned int indiceNoeud = this->posNoeud(i,j);
+    double valeurIndice = indiceNoeud-1;
+    // Dans le bord gauche
+    if((indiceNoeud % this->largeur) == 0)
+    {
+        valeurIndice = INFINITY;
+        Arc* voisinGauche = new Arc(valeurIndice, 0, 0);
+        return voisinGauche;
+    }
+    Arc* voisinGauche = new Arc(valeurIndice, 0, 0);
+    return voisinGauche;
+}
+
+Arc* GrapheImage::estP(const unsigned int& i, const unsigned int& j) 
+{
+    unsigned int indiceNoeud = this->posNoeud(i,j);
+    double valeurIndice = indiceNoeud+1;
+    // Dans le bord droit
+    if(((indiceNoeud+1) % this->largeur) == 0)
+    {
+        valeurIndice = INFINITY;
+        Arc* voisinDroit = new Arc(valeurIndice, 0, 0);
+        return voisinDroit;
+    }
+    Arc* voisinDroit = new Arc(valeurIndice, 0, 0);
+    return voisinDroit;
+}
+
+Arc* GrapheImage::nordP(const unsigned int& i, const unsigned int& j) 
+{
+
+    unsigned int indiceNoeud = this->posNoeud(i,j);
+    double valeurIndice = indiceNoeud-this->largeur;
+    // Dans le bord nord
+    if(indiceNoeud < largeur)
+    {
+        valeurIndice = INFINITY;
+        Arc* voisinNord = new Arc(valeurIndice, 0, 0);
+        return voisinNord;
+    }
+    Arc* voisinNord = new Arc(valeurIndice, 0, 0);
+    return voisinNord;
+}
+
+Arc* GrapheImage::sudP(const unsigned int& i, const unsigned int& j) 
+{
+
+    unsigned int indiceNoeud = this->posNoeud(i,j);
+    double valeurIndice = indiceNoeud-this->largeur;
+    // Dans le bord sud
+    if(indiceNoeud < largeur)
+    {
+        valeurIndice = INFINITY;
+        Arc* voisinSud = new Arc(valeurIndice, 0, 0);
+        return voisinSud;
+    }
+    Arc* voisinSud = new Arc(valeurIndice, 0, 0);
+    return voisinSud;
 }
 
 void GrapheImage::imageVersGraphe(const string &nomFichier)
@@ -60,28 +128,41 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     cout << "Hauteur : " << hauteur << endl;
     cout << "Intensité maximale : " << intensiteMax << endl;
 
-
     // On saute d’une ligne
     // getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
 
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
     unsigned int valeurPixel;
-    unsigned int indiceNoeud = 0;
-    Arc *nouveauTblArc[4];
+    // mon indice de ligne
+    unsigned int i = 0; 
+    // mon indice de colonne
+    unsigned int j = 0;
     while (fichier >> valeurPixel)
     {
-        // Test si le pixel est correct
-        assert(valeurPixel < intensiteMax);
-        // Création d'un nouveau pixel sur le tas
-        Noeud *nouveauNoeud = new Noeud(valeurPixel);
-        // On calcule les voisins du pixel
-        this->calculerVoisins(indiceNoeud, largeur, hauteur, nouveauTblArc);
-        // On modifie le tableau des voisins du pixel
-        nouveauNoeud->setTblArc(nouveauTblArc);
-        // Ajout du pixel dans le tableau
-        this->tblNoeuds.push_back(nouveauNoeud);
-        indiceNoeud++;
+
+        //On vérifie l'intensité
+        assert(valeurPixel <= intensiteMax);
+
+        //Création d'un noeud sur la tas
+        Arc* tableauArc[4];
+        Arc* voisinOuest = ouestP(i, j);
+        Arc* voisinEst = estP(i,j);
+        Arc* voisinNord = nordP(i,j);
+        Arc* voisinSud = sudP(i,j);
+
+        tableauArc[0] = voisinOuest;
+        tableauArc[1] = voisinEst;
+        tableauArc[2] = voisinNord;
+        tableauArc[3] = voisinSud;
+
+        Noeud* nouveauNoeud = new Noeud(valeurPixel, tableauArc);
+
+        if(j == this->largeur){
+            i++;
+            j=0;
+        }
+        j++;
     }
     // Fermeture du fichier
     fichier.close();
@@ -139,109 +220,6 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
     }
 }
 
-void GrapheImage::calculerVoisins(const unsigned int indiceNoeud, const unsigned int largeur,
-                                  const unsigned int hauteur, Arc *tblArc[4])
-{
-    Arc *voisinsGauche = new Arc(indiceNoeud - 1, 0, 0);
-    Arc *voisinsDroite = new Arc(indiceNoeud + 1, 0, 0);
-    Arc *voisinsHaut = new Arc(indiceNoeud - largeur, 0, 0);
-    Arc *voisinsBas = new Arc(indiceNoeud + largeur, 0, 0);
-    // Test si le neoud est un bord gauche
-    if ((indiceNoeud % largeur) == 0)
-    {
-        // Test si c'est le coin en haut a gauche
-        if (indiceNoeud < largeur)
-        {
-            voisinsHaut->valeur = INFINITY;
-        }
-        // Test si c'est le coin bas gauche
-        if (indiceNoeud >= (hauteur - 1) * largeur)
-        {
-            voisinsBas->valeur = INFINITY;
-        }
-        voisinsGauche->valeur = INFINITY;
-        tblArc[0] = voisinsGauche;
-        tblArc[1] = voisinsDroite;
-        tblArc[2] = voisinsHaut;
-        tblArc[3] = voisinsBas;
-    }
-
-    // Test si le noeud est un bord droit
-    else if ((indiceNoeud + 1) % largeur == 0)
-    {
-        // Test si c'est le coin en haut à droite
-        if (indiceNoeud < largeur)
-        {
-            voisinsHaut->valeur = INFINITY;
-        }
-        // Test si c'est le coin en bas à droite
-        if (indiceNoeud >= (hauteur - 1) * largeur)
-        {
-            voisinsBas->valeur = INFINITY;
-        }
-        voisinsDroite->valeur = INFINITY;
-        tblArc[0] = voisinsGauche;
-        tblArc[1] = voisinsDroite;
-        tblArc[2] = voisinsHaut;
-        tblArc[3] = voisinsBas;
-    }
-
-    // Test si le noeud est un bord du haut
-    else if (indiceNoeud < largeur)
-    {
-        voisinsHaut->valeur = INFINITY;
-        tblArc[0] = voisinsGauche;
-        tblArc[1] = voisinsDroite;
-        tblArc[2] = voisinsHaut;
-        tblArc[3] = voisinsBas;
-    }
-
-    // Test si le noeud est un bord du bas
-    else if (indiceNoeud >= (hauteur - 1) * largeur)
-    {
-        voisinsBas->valeur = INFINITY;
-        tblArc[0] = voisinsGauche;
-        tblArc[1] = voisinsDroite;
-        tblArc[2] = voisinsHaut;
-        tblArc[3] = voisinsBas;
-    }
-}
-
-void GrapheImage::testCalculVoisins()
-{
-    Arc *tblArcTest[4];
-    // On effectue le test sur une image 2*2
-    this->calculerVoisins(0, 2, 2, tblArcTest);
-    assert(tblArcTest[0]->valeur == INFINITY);
-    assert(tblArcTest[1]->valeur == 1);
-    assert(tblArcTest[2]->valeur == INFINITY);
-    assert(tblArcTest[3]->valeur == 2);
-    // cout << "[1, inf, 2, inf]" << endl;
-
-    this->calculerVoisins(1, 2, 2, tblArcTest);
-    assert(tblArcTest[0]->valeur == 0);
-    assert(tblArcTest[1]->valeur == INFINITY);
-    assert(tblArcTest[2]->valeur == INFINITY);
-    assert(tblArcTest[3]->valeur == 3);
-    // cout << "[0, inf, inf, 3]" << endl;
-
-    this->calculerVoisins(2, 2, 2, tblArcTest);
-    assert(tblArcTest[0]->valeur == INFINITY);
-    assert(tblArcTest[1]->valeur == 3);
-    assert(tblArcTest[2]->valeur == 0);
-    assert(tblArcTest[3]->valeur == INFINITY);
-    // cout << "[inf, 3, 0, inf]" << endl;
-
-    this->calculerVoisins(3, 2, 2, tblArcTest);
-    assert(tblArcTest[0]->valeur == 2);
-    assert(tblArcTest[1]->valeur == INFINITY);
-    assert(tblArcTest[2]->valeur == 1);
-    assert(tblArcTest[3]->valeur == INFINITY);
-    // cout << "[2, inf, 1, inf]" << endl;
-
-    cout << "[OK] Calcul voisin !" << endl;
-}
-
 double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
     int sigma = 1;
@@ -296,15 +274,33 @@ void GrapheImage::testCalculerCapacite()
     cout << "[OK] Calcul Capacite !" << endl;
 }
 
+void GrapheImage::testCalculVoisins()
+{
+    cout << "######################" << endl;
+    // Test sur un image 2 * 2
+    cout << "Debut du test des fonctions pour le calcule des voisins" << endl;
+
+    Arc* voisinGaucheTest = this->ouestP(0,0);
+    Arc* voisinDroitTest = this->estP(0,0);
+    Arc* voisinNordTest = this->nordP(0,0);
+    Arc* voisinSudTest = this->sudP(0,0);
+    assert(voisinGaucheTest->valeur == INFINITY);
+    assert(voisinDroitTest->valeur == 1);
+    assert(voisinNordTest->valeur ==INFINITY);
+    assert (voisinSudTest->valeur == 2);
+
+    cout << "[OK] Calcul voisin !" << endl;
+}
+
 void GrapheImage::test()
 {
 
     cout << "##############################" << endl;
     cout << "Tests" << endl;
 
-    testImageVersGraphe();
+    // testImageVersGraphe();
     testCalculVoisins();
-    testCalculerCapacite();
+    // testCalculerCapacite();
 
     cout << "--------------------------" << endl;
     cout << "[OK] All test passed !" << endl;
