@@ -22,7 +22,6 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
-    this->affichageGrille();
 }
 
 void GrapheImage::copieImage(const string &nomFichier)
@@ -116,7 +115,7 @@ void GrapheImage::testImageVersGraphe() // à finir
 void GrapheImage::grapheVersImage(const string &nomFichier)
 {
     // Ouverture du fichier en écriture
-    ofstream fichier(nomFichier + " Copie", std::ios::binary);
+    ofstream fichier(nomFichier.substr(0, nomFichier.find_last_of(".")) + "Copie.pgm", std::ios::binary);
 
     // Vérification si l'ouverture du fichier a réussi
     if (!fichier.is_open())
@@ -127,8 +126,6 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
 
     // Ecriture de l'en-tête PGM
     fichier << "P2" << endl;
-    fichier << "# Image PGM" << endl;
-    fichier << "# Générée par le programme" << endl;
     fichier << largeur << " " << hauteur << endl;
     fichier << intensiteMax << endl;
     
