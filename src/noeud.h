@@ -1,7 +1,7 @@
 struct Arc
 {
     // Constructeur prenant des valeurs initiales en paramètres
-    Arc(double valeur = 0, double flot = 0.0, double capacite = 0.0)
+    Arc(unsigned int valeur = 0, double flot = 0.0, double capacite = 0.0)
         : valeur(valeur), flot(flot), capacite(capacite) {}
 
     // Surcharge de l'opérateur '='
@@ -11,7 +11,8 @@ struct Arc
     ~Arc();
 
     // Données-membres
-    double valeur, flot, capacite;
+    unsigned int valeur;
+    double flot, capacite;
 };
 
 #ifndef NOEUD_H

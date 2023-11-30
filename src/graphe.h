@@ -10,6 +10,7 @@ using namespace std;
 class GrapheImage
 {
 private:
+    #define ERREUR_POS 	65535
     unsigned int largeur, hauteur, intensiteMax;
 
     // Données-membres
@@ -22,27 +23,37 @@ private:
     void grapheVersImage(const string &nomFichier);
 
     // Fonction qui calcule l'indice d'un noeud dans le tableau
-    unsigned int posNoeud(const unsigned int& i, const unsigned int& j) const;
+    // à partir de la position [i,j]
+    unsigned int posNoeud(const unsigned int i, const unsigned int j) const;
+    unsigned int posOuest(const unsigned int i, const unsigned int j) const;
+    unsigned int posEst(const unsigned int i, const unsigned int j) const;
+    unsigned int posNord(const unsigned int i, const unsigned int j) const;
+    unsigned int posSud(const unsigned int i, const unsigned int j) const;
+    // ou de l'indiceGlobal d'un noeud initial (pos)
+    unsigned int posOuest(const unsigned int pos) const;
+    unsigned int posEst(const unsigned int pos) const;
+    unsigned int posNord(const unsigned int pos) const;
+    unsigned int posSud(const unsigned int pos) const;
 
-    //Fonction qui calcule les arcs voisins d'un noeud
-    Arc* ajouterOuestP(const unsigned int& i, const unsigned int& j);
-    Arc* ajouterEstP(const unsigned int& i, const unsigned int& j);
-    Arc* ajouterNordP(const unsigned int& i, const unsigned int& j);   
-    Arc* ajouterSudP(const unsigned int& i, const unsigned int& j);
-    
+    // Fonction qui calcule les arcs voisins d'un noeud
+    Arc *ajouterOuestP(const unsigned int &i, const unsigned int &j);
+    Arc *ajouterEstP(const unsigned int &i, const unsigned int &j);
+    Arc *ajouterNordP(const unsigned int &i, const unsigned int &j);
+    Arc *ajouterSudP(const unsigned int &i, const unsigned int &j);
+
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
     double calculerCapacitePos(unsigned int posP, unsigned int posQ);
-    
+
     // tests
     void test();
+    void testCalculPosNoeud();
     void testCalculVoisins();
     void testImageVersGraphe();
     void testCalculerCapacite();
 
     // Cette fonction est la pour le moment mais je la mettrai dans un fichier outils.h ou quelque chose du genre
     bool compareDouble(double a, double b, double epsilon);
-
 
 public:
     GrapheImage();

@@ -30,19 +30,97 @@ void GrapheImage::copieImage(const string &nomFichier)
     this->grapheVersImage(nomFichier);
 }
 
-unsigned int GrapheImage::posNoeud(const unsigned int &i, const unsigned int &j) const
+// ------------------- Fonction pour calculer les indices globaux  ------------------- //
+unsigned int GrapheImage::posNoeud(const unsigned int i, const unsigned int j) const
 {
-    return (i * this->largeur) + j;
+    return (j * this->largeur) + i;
 }
+
+// position [i,j] du noeud initial
+unsigned int GrapheImage::posOuest(const unsigned int i, const unsigned int j) const
+{
+    if (i == 0)
+    {
+        return ERREUR_POS;
+    }
+    return (j * this->largeur) + (i - 1);
+}
+
+unsigned int GrapheImage::posEst(const unsigned int i, const unsigned int j) const
+{
+    if (i + 1 == largeur)
+    {
+        return ERREUR_POS;
+    }
+    return (j * this->largeur) + (i + 1);
+}
+
+unsigned int GrapheImage::posNord(const unsigned int i, const unsigned int j) const
+{
+    if (j == 0)
+    {
+        return ERREUR_POS;
+    }
+    return ((j - 1) * this->largeur) + i;
+}
+
+unsigned int GrapheImage::posSud(const unsigned int i, const unsigned int j) const
+{
+    if (j + 1 == hauteur)
+    {
+        return ERREUR_POS;
+    }
+    return ((j + 1) * this->largeur) + i;
+}
+
+// indiceGlobal du noeud initial
+unsigned int GrapheImage::posOuest(const unsigned int pos) const
+{
+    if (pos % this->largeur == 0)
+    {
+        return ERREUR_POS;
+    }
+    return pos - 1;
+}
+
+unsigned int GrapheImage::posEst(const unsigned int pos) const
+{
+    if ((pos + 1) % this->largeur == 0)
+    {
+        return ERREUR_POS;
+    }
+
+    return pos + 1;
+}
+
+unsigned int GrapheImage::posNord(const unsigned int pos) const
+{
+    if (pos < this->largeur)
+    {
+        return ERREUR_POS;
+    }
+    return pos - this->largeur;
+}
+
+unsigned int GrapheImage::posSud(const unsigned int pos) const
+{
+    if (pos >= (hauteur * largeur) - largeur)
+    {
+        return ERREUR_POS;
+    }
+    return pos + this->largeur;
+}
+
+// ------------------- Fonction pour calculer les voisins ------------------- //
 
 Arc *GrapheImage::ajouterOuestP(const unsigned int &i, const unsigned int &j)
 {
     unsigned int indiceNoeud = this->posNoeud(i, j);
-    double valeurIndice = indiceNoeud - 1;
+    double valeurIndice = posOuest(indiceNoeud);
     // Dans le bord gauche
     if ((indiceNoeud % this->largeur) == 0)
     {
-        valeurIndice = INFINITY;
+        valeurIndice = ERREUR_POS;
         Arc *voisinGauche = new Arc(valeurIndice, 0, 0);
         return voisinGauche;
     }
@@ -53,11 +131,11 @@ Arc *GrapheImage::ajouterOuestP(const unsigned int &i, const unsigned int &j)
 Arc *GrapheImage::ajouterEstP(const unsigned int &i, const unsigned int &j)
 {
     unsigned int indiceNoeud = this->posNoeud(i, j);
-    double valeurIndice = indiceNoeud + 1;
+    double valeurIndice = posEst(indiceNoeud);
     // Dans le bord droit
     if (((indiceNoeud + 1) % this->largeur) == 0)
     {
-        valeurIndice = INFINITY;
+        valeurIndice = ERREUR_POS;
         Arc *voisinDroit = new Arc(valeurIndice, 0, 0);
         return voisinDroit;
     }
@@ -69,11 +147,11 @@ Arc *GrapheImage::ajouterNordP(const unsigned int &i, const unsigned int &j)
 {
 
     unsigned int indiceNoeud = this->posNoeud(i, j);
-    double valeurIndice = indiceNoeud - this->largeur;
+    double valeurIndice = posNord(indiceNoeud);
     // Dans le bord nord
     if (indiceNoeud < largeur)
     {
-        valeurIndice = INFINITY;
+        valeurIndice = ERREUR_POS;
         Arc *voisinNord = new Arc(valeurIndice, 0, 0);
         return voisinNord;
     }
@@ -85,11 +163,11 @@ Arc *GrapheImage::ajouterSudP(const unsigned int &i, const unsigned int &j)
 {
 
     unsigned int indiceNoeud = this->posNoeud(i, j);
-    double valeurIndice = indiceNoeud + this->largeur;
+    double valeurIndice = posSud(indiceNoeud);
     // Dans le bord sud
     if (indiceNoeud >= (hauteur * largeur) - largeur)
     {
-        valeurIndice = INFINITY;
+        valeurIndice = ERREUR_POS;
         Arc *voisinSud = new Arc(valeurIndice, 0, 0);
         return voisinSud;
     }
@@ -158,40 +236,15 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
         Noeud *nouveauNoeud = new Noeud(valeurPixel, tableauArc);
         this->tblNoeuds.push_back(nouveauNoeud);
 
-        if (j == this->largeur)
+        if (i == this->largeur)
         {
-            i++;
-            j = 0;
+            j++;
+            i = 0;
         }
-        j++;
+        i++;
     }
     // Fermeture du fichier
     fichier.close();
-}
-
-void GrapheImage::testImageVersGraphe()
-{
-    this->imageVersGraphe("src/imagePgmTest.pgm");
-
-    // Test de la lecture du fichier (début)
-    assert(this->tblNoeuds[0]->getIntensite() == 200);
-
-    // Test de la lecture du fichier (fin)
-    assert(this->tblNoeuds[8]->getIntensite() == 60);
-
-    // Test des voisins du coin gauche
-    assert(this->tblNoeuds[0]->getTblArc(0)->valeur == INFINITY);
-    assert(this->tblNoeuds[0]->getTblArc(1)->valeur == 1); // fait un cout tu verra que ton 1 est affecter dans des variables de ton arc mais juste pas à valeur
-    assert(this->tblNoeuds[0]->getTblArc(2)->valeur == INFINITY);
-    assert(this->tblNoeuds[0]->getTblArc(3)->valeur == 3);
-
-    // Test des voisins du coin droit
-    assert(this->tblNoeuds[2]->getTblArc(0)->valeur == 1);
-    assert(this->tblNoeuds[2]->getTblArc(1)->valeur == INFINITY);
-    assert(this->tblNoeuds[2]->getTblArc(2)->valeur == INFINITY);
-    assert(this->tblNoeuds[2]->getTblArc(3)->valeur == 5);
-
-    cout << "[OK] Image vers Graphe !" << endl;
 }
 
 void GrapheImage::grapheVersImage(const string &nomFichier)
@@ -230,6 +283,105 @@ double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
 {
     return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
+}
+
+void GrapheImage::affichageGrille() const
+{
+    unsigned int indiceLargeur = 0;
+    unsigned int indiceNoeud = 0;
+    while (indiceNoeud < this->tblNoeuds.size())
+    {
+        if (indiceLargeur >= this->largeur)
+        {
+            // Saute une ligne
+            cout << "" << endl;
+            // Remise a zero
+            indiceLargeur = 0;
+        }
+        // Affichage intensite avec un espace en plus
+        cout << this->tblNoeuds[indiceNoeud]->getIntensite() << " ";
+        indiceLargeur++;
+        indiceNoeud++;
+    }
+    // Ajout du endline (c'est plus jolie)
+    cout << "" << endl;
+}
+
+// ------------------- Tests ------------------- //
+
+void GrapheImage::testCalculPosNoeud()
+{
+    hauteur = 6;
+    largeur = 3;
+    assert(posNoeud(0, 0) == 0);
+    assert(posNoeud(1, 0) == 1);
+    assert(posNoeud(2, 0) == 2);
+    assert(posNoeud(0, 1) == 3);
+    assert(posNoeud(1, 1) == 4);
+    assert(posNoeud(2, 1) == 5);
+    assert(posNoeud(0, 2) == 6);
+    assert(posNoeud(1, 2) == 7);
+    assert(posNoeud(2, 2) == 8);
+    assert(posNoeud(0, 3) == 9);
+    assert(posNoeud(1, 3) == 10);
+    assert(posNoeud(2, 3) == 11);
+    assert(posNoeud(0, 4) == 12);
+    assert(posNoeud(1, 4) == 13);
+    assert(posNoeud(2, 4) == 14);
+    assert(posNoeud(0, 5) == 15);
+    assert(posNoeud(1, 5) == 16);
+    assert(posNoeud(2, 5) == 17);
+
+    // coin en haut à gauche
+    assert(posOuest(0, 0) == ERREUR_POS && posOuest(0) == ERREUR_POS);
+    assert(posEst(0, 0) == 1 && posEst(0) == 1);
+    assert(posNord(0, 0) == ERREUR_POS && posNord(0) == ERREUR_POS);
+    assert(posSud(0, 0) == 3 && posSud(0) == 3);
+    // coin en haut à droite
+    assert(posOuest(2, 0) == 1 && posOuest(2) == 1);
+    assert(posEst(2, 0) == ERREUR_POS && posEst(2) == ERREUR_POS);
+    assert(posNord(2, 0) == ERREUR_POS && posNord(2) == ERREUR_POS);
+    assert(posSud(2, 0) == 5 && posSud(2) == 5);
+    // coin en bas à gauche
+    assert(posOuest(0, 5) == ERREUR_POS && posOuest(15) == ERREUR_POS);
+    assert(posEst(0, 5) == 16 && posEst(15) == 16);
+    assert(posNord(0, 5) == 12 && posNord(15) == 12);
+    assert(posSud(0, 5) == ERREUR_POS && posSud(15) == ERREUR_POS);
+    // coin en bas à droite
+    assert(posOuest(2, 5) == 16 && posOuest(17) == 16);
+    assert(posEst(2, 5) == ERREUR_POS && posEst(17) == ERREUR_POS);
+    assert(posNord(2, 5) == 14 && posNord(17) == 14);
+    assert(posSud(2, 5) == ERREUR_POS && posSud(17) == ERREUR_POS);
+
+    hauteur = 0;
+    largeur = 0;
+
+    cout << "[OK] Calcul Positions !" << endl;
+}
+
+void GrapheImage::testImageVersGraphe()
+{
+    this->imageVersGraphe("src/imagePgmTest.pgm");
+
+    // Test de la lecture du fichier (début)
+    assert(this->tblNoeuds[0]->getIntensite() == 200);
+
+    // Test de la lecture du fichier (fin)
+    assert(this->tblNoeuds[8]->getIntensite() == 60);
+
+    // Test des voisins du coin gauche
+    assert(this->tblNoeuds[0]->getTblArc(0)->valeur == ERREUR_POS);
+    assert(this->tblNoeuds[0]->getTblArc(1)->valeur == 1);
+    assert(this->tblNoeuds[0]->getTblArc(2)->valeur == ERREUR_POS);
+    assert(this->tblNoeuds[0]->getTblArc(3)->valeur == 3);
+
+    // Test des voisins du coin droit
+    assert(this->tblNoeuds[2]->getTblArc(0)->valeur == 1);
+    assert(this->tblNoeuds[2]->getTblArc(1)->valeur == ERREUR_POS);
+    assert(this->tblNoeuds[2]->getTblArc(2)->valeur == ERREUR_POS);
+    assert(this->tblNoeuds[2]->getTblArc(3)->valeur == 5);
+
+    cout << "[OK] Image vers Graphe !" << endl;
 }
 
 void GrapheImage::testCalculerCapacite()
@@ -288,9 +440,9 @@ void GrapheImage::testCalculVoisins()
     Arc *voisinDroitTest = this->ajouterEstP(0, 0);
     Arc *voisinNordTest = this->ajouterNordP(0, 0);
     Arc *voisinSudTest = this->ajouterSudP(0, 0);
-    assert(voisinGaucheTest->valeur == INFINITY);
+    assert(voisinGaucheTest->valeur == ERREUR_POS);
     assert(voisinDroitTest->valeur == 1);
-    assert(voisinNordTest->valeur == INFINITY);
+    assert(voisinNordTest->valeur == ERREUR_POS);
     assert(voisinSudTest->valeur == 2);
 
     hauteur = 0;
@@ -304,6 +456,7 @@ void GrapheImage::test()
     cout << "##############################" << endl;
     cout << "Tests" << endl;
 
+    testCalculPosNoeud();
     testImageVersGraphe();
     testCalculVoisins();
     testCalculerCapacite();
@@ -312,28 +465,7 @@ void GrapheImage::test()
     cout << "[OK] All test passed !" << endl;
 }
 
-void GrapheImage::affichageGrille() const
-{
-    unsigned int indiceLargeur = 0;
-    unsigned int indiceNoeud = 0;
-    while (indiceNoeud < this->tblNoeuds.size())
-    {
-        if (indiceLargeur >= this->largeur)
-        {
-            // Saute une ligne
-            cout << "" << endl;
-            // Remise a zero
-            indiceLargeur = 0;
-        }
-        // Affichage intensite avec un espace en plus
-        cout << this->tblNoeuds[indiceNoeud]->getIntensite() << " ";
-        indiceLargeur++;
-        indiceNoeud++;
-    }
-    // Ajout du endline (c'est plus jolie)
-    cout << "" << endl;
-}
-
+// ------------------- Destructeur ------------------- //
 GrapheImage::~GrapheImage()
 {
     unsigned int i = 0;
@@ -347,6 +479,8 @@ GrapheImage::~GrapheImage()
     // cout << "Destructeur Graphe" << endl;
 }
 
+// ------------------- Tools ------------------- //
+
 bool GrapheImage::compareDouble(double a, double b, double epsilon)
 {
     return fabs(a - b) < epsilon;
@@ -358,8 +492,8 @@ bool GrapheImage::compareDouble(double a, double b, double epsilon)
      if (i == 0)
      {
          double ouest = calculerCapacite(intensites[i], intensites[i + 1]);
-         double est = INFINITY;
-         double nord = INFINITY;
+         double est = ERREUR_POS;
+         double nord = ERREUR_POS;
          double sud = calculerCapacite(intensites[i], intensites[i + int(sqrt(testSize))]);
          cout << "Ouest : " << ouest << endl;
          cout << "Est : " << est << endl;
