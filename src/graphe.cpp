@@ -13,10 +13,9 @@ using namespace std;
 GrapheImage::GrapheImage()
 {
     cout << "GrapheImage" << endl;
-    largeur = 2; 
-    hauteur = 2;
     test();
-
+    largeur = 0;
+    hauteur = 0;
     intensiteMax = 0;
 }
 
@@ -31,70 +30,70 @@ void GrapheImage::copieImage(const string &nomFichier)
     this->grapheVersImage(nomFichier);
 }
 
-unsigned int GrapheImage::posNoeud(const unsigned int& i, const unsigned int& j) const
+unsigned int GrapheImage::posNoeud(const unsigned int &i, const unsigned int &j) const
 {
-    return (i*this->largeur)+j;
+    return (i * this->largeur) + j;
 }
 
-Arc* GrapheImage::ouestP(const unsigned int& i, const unsigned int& j) 
+Arc *GrapheImage::ajouterOuestP(const unsigned int &i, const unsigned int &j)
 {
-    unsigned int indiceNoeud = this->posNoeud(i,j);
-    double valeurIndice = indiceNoeud-1;
+    unsigned int indiceNoeud = this->posNoeud(i, j);
+    double valeurIndice = indiceNoeud - 1;
     // Dans le bord gauche
-    if((indiceNoeud % this->largeur) == 0)
+    if ((indiceNoeud % this->largeur) == 0)
     {
         valeurIndice = INFINITY;
-        Arc* voisinGauche = new Arc(valeurIndice, 0, 0);
+        Arc *voisinGauche = new Arc(valeurIndice, 0, 0);
         return voisinGauche;
     }
-    Arc* voisinGauche = new Arc(valeurIndice, 0, 0);
+    Arc *voisinGauche = new Arc(valeurIndice, 0, 0);
     return voisinGauche;
 }
 
-Arc* GrapheImage::estP(const unsigned int& i, const unsigned int& j) 
+Arc *GrapheImage::ajouterEstP(const unsigned int &i, const unsigned int &j)
 {
-    unsigned int indiceNoeud = this->posNoeud(i,j);
-    double valeurIndice = indiceNoeud+1;
+    unsigned int indiceNoeud = this->posNoeud(i, j);
+    double valeurIndice = indiceNoeud + 1;
     // Dans le bord droit
-    if(((indiceNoeud+1) % this->largeur) == 0)
+    if (((indiceNoeud + 1) % this->largeur) == 0)
     {
         valeurIndice = INFINITY;
-        Arc* voisinDroit = new Arc(valeurIndice, 0, 0);
+        Arc *voisinDroit = new Arc(valeurIndice, 0, 0);
         return voisinDroit;
     }
-    Arc* voisinDroit = new Arc(valeurIndice, 0, 0);
+    Arc *voisinDroit = new Arc(valeurIndice, 0, 0);
     return voisinDroit;
 }
 
-Arc* GrapheImage::nordP(const unsigned int& i, const unsigned int& j) 
+Arc *GrapheImage::ajouterNordP(const unsigned int &i, const unsigned int &j)
 {
 
-    unsigned int indiceNoeud = this->posNoeud(i,j);
-    double valeurIndice = indiceNoeud-this->largeur;
+    unsigned int indiceNoeud = this->posNoeud(i, j);
+    double valeurIndice = indiceNoeud - this->largeur;
     // Dans le bord nord
-    if(indiceNoeud < largeur)
+    if (indiceNoeud < largeur)
     {
         valeurIndice = INFINITY;
-        Arc* voisinNord = new Arc(valeurIndice, 0, 0);
+        Arc *voisinNord = new Arc(valeurIndice, 0, 0);
         return voisinNord;
     }
-    Arc* voisinNord = new Arc(valeurIndice, 0, 0);
+    Arc *voisinNord = new Arc(valeurIndice, 0, 0);
     return voisinNord;
 }
 
-Arc* GrapheImage::sudP(const unsigned int& i, const unsigned int& j) 
+Arc *GrapheImage::ajouterSudP(const unsigned int &i, const unsigned int &j)
 {
 
-    unsigned int indiceNoeud = this->posNoeud(i,j);
-    double valeurIndice = indiceNoeud-this->largeur;
+    unsigned int indiceNoeud = this->posNoeud(i, j);
+    double valeurIndice = indiceNoeud + this->largeur;
     // Dans le bord sud
-    if(indiceNoeud < largeur)
+    if (indiceNoeud >= (hauteur * largeur) - largeur)
     {
         valeurIndice = INFINITY;
-        Arc* voisinSud = new Arc(valeurIndice, 0, 0);
+        Arc *voisinSud = new Arc(valeurIndice, 0, 0);
         return voisinSud;
     }
-    Arc* voisinSud = new Arc(valeurIndice, 0, 0);
+    Arc *voisinSud = new Arc(valeurIndice, 0, 0);
     return voisinSud;
 }
 
@@ -124,9 +123,9 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
 
     // Lecture et stockage de (largeur, hauteur, intensité maximale)
     fichier >> largeur >> hauteur >> intensiteMax;
-    cout << "Largeur : " << largeur << endl;
-    cout << "Hauteur : " << hauteur << endl;
-    cout << "Intensité maximale : " << intensiteMax << endl;
+    // cout << "Largeur : " << largeur << endl;
+    // cout << "Hauteur : " << hauteur << endl;
+    // cout << "Intensité maximale : " << intensiteMax << endl;
 
     // On saute d’une ligne
     // getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
@@ -135,32 +134,34 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     // Ajout des arcs pour chaque pixels
     unsigned int valeurPixel;
     // mon indice de ligne
-    unsigned int i = 0; 
+    unsigned int i = 0;
     // mon indice de colonne
     unsigned int j = 0;
     while (fichier >> valeurPixel)
     {
 
-        //On vérifie l'intensité
+        // On vérifie l'intensité
         assert(valeurPixel <= intensiteMax);
 
-        //Création d'un noeud sur la tas
-        Arc* tableauArc[4];
-        Arc* voisinOuest = ouestP(i, j);
-        Arc* voisinEst = estP(i,j);
-        Arc* voisinNord = nordP(i,j);
-        Arc* voisinSud = sudP(i,j);
+        // Création d'un noeud sur la tas
+        Arc *tableauArc[4];
+        Arc *voisinOuest = ajouterOuestP(i, j);
+        Arc *voisinEst = ajouterEstP(i, j);
+        Arc *voisinNord = ajouterNordP(i, j);
+        Arc *voisinSud = ajouterSudP(i, j);
 
         tableauArc[0] = voisinOuest;
         tableauArc[1] = voisinEst;
         tableauArc[2] = voisinNord;
         tableauArc[3] = voisinSud;
 
-        Noeud* nouveauNoeud = new Noeud(valeurPixel, tableauArc);
+        Noeud *nouveauNoeud = new Noeud(valeurPixel, tableauArc);
+        this->tblNoeuds.push_back(nouveauNoeud);
 
-        if(j == this->largeur){
+        if (j == this->largeur)
+        {
             i++;
-            j=0;
+            j = 0;
         }
         j++;
     }
@@ -168,7 +169,7 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     fichier.close();
 }
 
-void GrapheImage::testImageVersGraphe() // à finir
+void GrapheImage::testImageVersGraphe()
 {
     this->imageVersGraphe("src/imagePgmTest.pgm");
 
@@ -209,7 +210,7 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
     fichier << "P2" << endl;
     fichier << largeur << " " << hauteur << endl;
     fichier << intensiteMax << endl;
-    
+
     for (unsigned int j = 0; j < hauteur; j++)
     {
         for (unsigned int i = 0; i < largeur; i++)
@@ -276,19 +277,24 @@ void GrapheImage::testCalculerCapacite()
 
 void GrapheImage::testCalculVoisins()
 {
-    cout << "######################" << endl;
-    // Test sur un image 2 * 2
-    cout << "Debut du test des fonctions pour le calcule des voisins" << endl;
+    // cout << "######################" << endl;
+    // // Test sur un image 2 * 2
+    // cout << "Debut du test des fonctions pour le calcule des voisins" << endl;
 
-    Arc* voisinGaucheTest = this->ouestP(0,0);
-    Arc* voisinDroitTest = this->estP(0,0);
-    Arc* voisinNordTest = this->nordP(0,0);
-    Arc* voisinSudTest = this->sudP(0,0);
+    hauteur = 2;
+    largeur = 2;
+
+    Arc *voisinGaucheTest = this->ajouterOuestP(0, 0);
+    Arc *voisinDroitTest = this->ajouterEstP(0, 0);
+    Arc *voisinNordTest = this->ajouterNordP(0, 0);
+    Arc *voisinSudTest = this->ajouterSudP(0, 0);
     assert(voisinGaucheTest->valeur == INFINITY);
     assert(voisinDroitTest->valeur == 1);
-    assert(voisinNordTest->valeur ==INFINITY);
-    assert (voisinSudTest->valeur == 2);
+    assert(voisinNordTest->valeur == INFINITY);
+    assert(voisinSudTest->valeur == 2);
 
+    hauteur = 0;
+    largeur = 0;
     cout << "[OK] Calcul voisin !" << endl;
 }
 
@@ -298,9 +304,9 @@ void GrapheImage::test()
     cout << "##############################" << endl;
     cout << "Tests" << endl;
 
-    // testImageVersGraphe();
+    testImageVersGraphe();
     testCalculVoisins();
-    // testCalculerCapacite();
+    testCalculerCapacite();
 
     cout << "--------------------------" << endl;
     cout << "[OK] All test passed !" << endl;
@@ -308,23 +314,24 @@ void GrapheImage::test()
 
 void GrapheImage::affichageGrille() const
 {
-        unsigned int indiceLargeur = 0;
-        unsigned int indiceNoeud = 0;
-        while(indiceNoeud < this->tblNoeuds.size())
+    unsigned int indiceLargeur = 0;
+    unsigned int indiceNoeud = 0;
+    while (indiceNoeud < this->tblNoeuds.size())
+    {
+        if (indiceLargeur >= this->largeur)
         {
-                if(indiceLargeur >= this->largeur)
-                {
-                        // Saute une ligne
-                        cout << "" << endl;
-                        // Remise a zero
-                        indiceLargeur = 0;
-                }
-                //Affichage intensite avec un espace en plus
-                cout << this->tblNoeuds[indiceNoeud]->getIntensite() << " ";
-                indiceLargeur ++; indiceNoeud ++;
+            // Saute une ligne
+            cout << "" << endl;
+            // Remise a zero
+            indiceLargeur = 0;
         }
-        // Ajout du endline (c'est plus jolie)
-        cout << "" << endl;
+        // Affichage intensite avec un espace en plus
+        cout << this->tblNoeuds[indiceNoeud]->getIntensite() << " ";
+        indiceLargeur++;
+        indiceNoeud++;
+    }
+    // Ajout du endline (c'est plus jolie)
+    cout << "" << endl;
 }
 
 GrapheImage::~GrapheImage()

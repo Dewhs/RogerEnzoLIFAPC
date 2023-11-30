@@ -24,14 +24,11 @@ private:
     // Fonction qui calcule l'indice d'un noeud dans le tableau
     unsigned int posNoeud(const unsigned int& i, const unsigned int& j) const;
 
-    //Fonction qui calcule les voisins d'un noeud
-    Arc* estP(const unsigned int& i, const unsigned int& j);
-
-    Arc* ouestP(const unsigned int& i, const unsigned int& j);
-    
-    Arc* nordP(const unsigned int& i, const unsigned int& j);
-    
-    Arc* sudP(const unsigned int& i, const unsigned int& j);
+    //Fonction qui calcule les arcs voisins d'un noeud
+    Arc* ajouterOuestP(const unsigned int& i, const unsigned int& j);
+    Arc* ajouterEstP(const unsigned int& i, const unsigned int& j);
+    Arc* ajouterNordP(const unsigned int& i, const unsigned int& j);   
+    Arc* ajouterSudP(const unsigned int& i, const unsigned int& j);
     
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
