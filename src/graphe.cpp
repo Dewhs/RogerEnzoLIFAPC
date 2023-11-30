@@ -116,7 +116,6 @@ unsigned int GrapheImage::posSud(const unsigned int pos) const
 }
 
 // ------------------- Fonction pour calculer les voisins ------------------- //
-
 Arc *GrapheImage::ajouterOuestP(const unsigned int &i, const unsigned int &j)
 {
     unsigned int indiceNoeud = this->posNoeud(i, j);
@@ -205,12 +204,7 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
 
     // Lecture et stockage de (largeur, hauteur, intensité maximale)
     fichier >> largeur >> hauteur >> intensiteMax;
-    // cout << "Largeur : " << largeur << endl;
-    // cout << "Hauteur : " << hauteur << endl;
-    // cout << "Intensité maximale : " << intensiteMax << endl;
 
-    // On saute d’une ligne
-    // getline(fichier, ligne); // pourquoi getline ? il y a un \n à la fin de la ligne ?
 
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
@@ -225,7 +219,7 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
         // On vérifie l'intensité
         assert(valeurPixel <= intensiteMax);
 
-        // Création d'un noeud sur la tas
+        // Création du tableau de voisin (Arc)
         Arc *tableauArc[4];
         Arc *voisinOuest = ajouterOuestP(i, j);
         Arc *voisinEst = ajouterEstP(i, j);
@@ -265,14 +259,14 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
 
     // Ecriture de l'en-tête PGM
     fichier << "P2" << endl;
-    fichier << largeur << " " << hauteur << endl;
-    fichier << intensiteMax << endl;
+    fichier << this->largeur << " " << this->hauteur << endl;
+    fichier << this->intensiteMax << endl;
 
-    for (unsigned int j = 0; j < hauteur; j++)
+    for (unsigned int j = 0; j < this->hauteur; j++)
     {
-        for (unsigned int i = 0; i < largeur; i++)
+        for (unsigned int i = 0; i < this->largeur; i++)
         {
-            fichier << tblNoeuds[i + j * largeur]->getIntensite() << " ";
+            fichier << this->tblNoeuds[i + j * this->largeur]->getIntensite() << " ";
         }
         fichier << endl;
     }
@@ -280,24 +274,31 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
 
 double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
+    // Ne pas oublier le H
     int sigma = 1;
     return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
 }
 
 double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
 {
-    return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
+    return calculerCapacite(this->tblNoeuds[posP]->getIntensite(), this->tblNoeuds[posQ]->getIntensite());
 }
 
 double GrapheImage::calculerCapacitePS(unsigned int posP, bool aSource)
 {
+    double alpha = 2.0; //Alpha est a définir c'est un paramètre du programme d'après le sujet
+
+    // On calcule la capacite entre la source et un pixel
     if (aSource)
     {
-       //pas fini
+        return lround(-(alpha * log(255.0-(this->tblNoeuds[posP]->getIntensite())/255.0)));
     }
-    
+    // On calcule la capacité entre le puit
+    else
+    {
+        return lround(-(alpha * log((this->tblNoeuds[posP]->getIntensite())/255.0)));
+    }
 }
-
 
 void GrapheImage::affichageGrille() const
 {
@@ -466,7 +467,6 @@ void GrapheImage::testCalculVoisins()
 
 void GrapheImage::test()
 {
-
     cout << "##############################" << endl;
     cout << "Tests" << endl;
 
@@ -492,7 +492,6 @@ GrapheImage::~GrapheImage()
     // cout << this->tblNoeuds.size() << endl;
     // cout << "Destructeur Graphe" << endl;
 }
-
 // ------------------- Tools ------------------- //
 
 bool GrapheImage::compareDouble(double a, double b, double epsilon)
