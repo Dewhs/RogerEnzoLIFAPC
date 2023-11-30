@@ -30,6 +30,10 @@ void GrapheImage::copieImage(const string &nomFichier)
     this->grapheVersImage(nomFichier);
 }
 
+// ------------------- Fonction de recherche d'un chemin entre deux noeuds ------------------- //
+
+
+
 // ------------------- Fonction pour calculer les indices globaux  ------------------- //
 unsigned int GrapheImage::posNoeud(const unsigned int i, const unsigned int j) const
 {
@@ -284,6 +288,16 @@ double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
 {
     return calculerCapacite(tblNoeuds[posP]->getIntensite(), tblNoeuds[posQ]->getIntensite());
 }
+
+double GrapheImage::calculerCapacitePS(unsigned int posP, bool aSource)
+{
+    if (aSource)
+    {
+       //pas fini
+    }
+    
+}
+
 
 void GrapheImage::affichageGrille() const
 {

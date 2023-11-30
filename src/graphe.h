@@ -10,17 +10,12 @@ using namespace std;
 class GrapheImage
 {
 private:
-    #define ERREUR_POS 	65535
+#define ERREUR_POS 65535
     unsigned int largeur, hauteur, intensiteMax;
 
     // Données-membres
     vector<Noeud *> tblNoeuds;
 
-    // Fonction qui construit le graphe d'une image pgm
-    void imageVersGraphe(const string &nomFichier);
-
-    // Fonction qui construit l'image à partir du graphe
-    void grapheVersImage(const string &nomFichier);
 
     // Fonction qui calcule l'indice d'un noeud dans le tableau
     // à partir de la position [i,j]
@@ -41,9 +36,28 @@ private:
     Arc *ajouterNordP(const unsigned int &i, const unsigned int &j);
     Arc *ajouterSudP(const unsigned int &i, const unsigned int &j);
 
+
+
+
+    // Fonction qui construit le graphe d'une image pgm
+    void imageVersGraphe(const string &nomFichier);
+
+    // Fonction qui construit l'image à partir du graphe
+    void grapheVersImage(const string &nomFichier);
+
+    // Fonction de recherche d'un chemin entre deux noeuds
+    // retourne un vecteur de pair contenant le chemin
+    vector<Noeud *, Noeud *> trouverChemin(const unsigned int posSource, const unsigned int posPuit);
+
+
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
     double calculerCapacitePos(unsigned int posP, unsigned int posQ);
+    // Fonction qui calcule la capacité d'un arc entre un noeud et la source ou le puit
+    double calculerCapacitePS(unsigned int posP, bool aSource);
+
+    // Fonction qui calcule le flot
+
 
     // tests
     void test();
