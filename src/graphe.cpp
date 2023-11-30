@@ -205,7 +205,6 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     // Lecture et stockage de (largeur, hauteur, intensité maximale)
     fichier >> largeur >> hauteur >> intensiteMax;
 
-
     // Lecture des intensités des pixels
     // Ajout des arcs pour chaque pixels
     unsigned int valeurPixel;
@@ -241,6 +240,19 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
         }
         i++;
     }
+    //Ajout des capacitées pour chaque arc
+    for(unsigned int i = 0; i < this->tblNoeuds.size(); i++)
+    {
+        // Parcours du tableau de noeud
+        for(unsigned int j = 0; j < 4; j++)
+        {
+            if(!(this->tblNoeuds[i]->getTblArc(j)->capacite == ERREUR_POS))
+            {
+                this->tblNoeuds[i]->getTblArc(j)->capacite = this->calculerCapacite(i, this->tblNoeuds[i]->getTblArc(j)->valeur);
+            }
+        }
+    }
+
     // Fermeture du fichier
     fichier.close();
 }
@@ -272,9 +284,11 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
     }
 }
 
+// ------------------- Fonction pour calculer les capacitées ------------------- //
 double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
     // Ne pas oublier le H
+    // Je pense qu'il faut faire un lround ici c'est une capacité donc un int mais on en repalera
     int sigma = 1;
     return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
 }
@@ -395,6 +409,13 @@ void GrapheImage::testImageVersGraphe()
     assert(this->tblNoeuds[2]->getTblArc(1)->valeur == ERREUR_POS);
     assert(this->tblNoeuds[2]->getTblArc(2)->valeur == ERREUR_POS);
     assert(this->tblNoeuds[2]->getTblArc(3)->valeur == 5);
+
+    // Test de la capacité pour 4 arcs
+    //AVEC SIGMA = 4
+    assert(this->tblNoeuds[0]->getTblArc(0)->capacite == 0);
+    // assert(this->tblNoeuds[0]->getTblArc(1)->capacite == 1ou2);
+    assert(this->tblNoeuds[0]->getTblArc(2)->capacite == 0);
+    // assert(this->tblNoeuds[0]->getTblArc(3)->capacite == 3ou4);
 
     cout << "[OK] Image vers Graphe !" << endl;
 }
