@@ -16,7 +16,6 @@ private:
     // Données-membres
     vector<Noeud *> tblNoeuds;
 
-
     // Fonction qui calcule l'indice d'un noeud dans le tableau
     // à partir de la position [i,j]
     unsigned int posNoeud(const unsigned int i, const unsigned int j) const;
@@ -36,9 +35,6 @@ private:
     Arc *ajouterNordP(const unsigned int &i, const unsigned int &j);
     Arc *ajouterSudP(const unsigned int &i, const unsigned int &j);
 
-
-
-
     // Fonction qui construit le graphe d'une image pgm
     void imageVersGraphe(const string &nomFichier);
 
@@ -57,7 +53,7 @@ private:
     double calculerCapacitePS(unsigned int posP, bool aSource);
 
     // Fonction qui calcule le flot
-
+    void calculerFlot(unsigned int posP, unsigned int posQ);
 
     // tests
     void test();

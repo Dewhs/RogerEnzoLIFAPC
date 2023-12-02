@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <queue>
 #include <sstream>
 
 using namespace std;
@@ -31,6 +32,36 @@ void GrapheImage::copieImage(const string &nomFichier)
 }
 
 // ------------------- Fonction de recherche d'un chemin entre deux noeuds ------------------- //
+// vector<Noeud *, Noeud *> GrapheImage::trouverChemin(const unsigned int posSource, const unsigned int posPuit)
+// {
+//     queue<int> file;
+//     unordered_set<int> marque;
+
+//     file.push(posSource);
+//     marque.insert(posSource);
+
+//     while (!file.empty()) {
+//         unsigned int s = file.front();
+//         file.pop();
+//         cout << s << " "; // Affichage du sommet visité
+
+//         if (s == posSource) {
+//             cout << endl << "Puits atteint." << endl;
+//             return;
+//         }
+
+//         for (int t : G.adjList[s]) {
+//             if (marque.find(t) == marque.end()) {
+//                 file.push(t);
+//                 marque.insert(t);
+//             }
+//         }
+//     }
+
+//     cout << endl << "Puits non atteint à partir de la source." << endl;
+// }
+
+
 
 
 
@@ -282,6 +313,25 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
             fichier << this->tblNoeuds[i + j * this->largeur]->getIntensite() << " ";
         }
         fichier << endl;
+    }
+}
+
+// ------------------- Fonction pour calculer les flots ------------------- //
+void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ)
+{
+    // On récupère la capacité de l'arc P et Q
+    double capPQ = this->tblNoeuds[posP]->getTblArc(posQ)->capacite;
+    // On récupère le flot de l'arc P et Q
+    double flotPQ = this->tblNoeuds[posP]->getTblArc(posQ)->flot;
+    //On récupère le flot de l'arc Q et P
+    double flotQP = this->tblNoeuds[posQ]->getTblArc(posP)->flot;
+    // On incrémente le flot de base avec l'ajout du nouveau flot
+    this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP);
+
+    // Si le flot le dépasse la capaité on ajoute le trop plein dans l'arc Q et P
+    if(this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ){
+        double flotPlein = this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) - capPQ;
+        this->tblNoeuds[posQ]->getTblArc(posP)->flot += flotPlein;
     }
 }
 
