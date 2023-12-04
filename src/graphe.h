@@ -43,7 +43,7 @@ private:
 
     // Fonction de recherche d'un chemin entre deux noeuds
     // retourne un vecteur de pair contenant le chemin
-    vector<Noeud *, Noeud *> trouverChemin(const unsigned int posSource, const unsigned int posPuit);
+    vector<pair<int, int>> trouverChemin();
 
 
     // Fonction qui calcule la capacité d'un arc
@@ -53,7 +53,7 @@ private:
     double calculerCapacitePS(unsigned int posP, bool aSource);
 
     // Fonction qui calcule le flot
-    void calculerFlot(unsigned int posP, unsigned int posQ);
+    void calculerFlot(unsigned int posP, unsigned int posQ, int aSource);
 
     // tests
     void test();

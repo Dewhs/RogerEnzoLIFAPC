@@ -79,3 +79,16 @@ void Noeud::setTblArc(Arc *nouveauTbl[4])
         this->tblArc[i]->valeur = nouveauTbl[i]->valeur;
     }
 }
+
+
+void Noeud::setMarque(int marque)
+{
+    this->marque = marque;
+}
+
+int Noeud::getMarque() const
+{
+    return marque;
+}
+
+

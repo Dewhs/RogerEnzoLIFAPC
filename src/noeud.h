@@ -25,6 +25,10 @@ private:
     // Données-membres
     Arc *tblArc[4];
     unsigned int intensite;
+    //si marque = 0, le noeud n'est pas visité
+    //si marque = 1, le noeud est vue
+    //si marque = 2, le noeud est visité
+    int marque;
 
 public:
 
@@ -32,11 +36,17 @@ public:
     Noeud(unsigned int intensite); // Construteur avec l'intensité en paramètre
     Noeud(unsigned int intensite, Arc* tabArc[4]); // Constructeur avec l'intensité et le tableau des voisin en parameter
 
+    double capacitePuit, capaciteSource; // Capacité du puit et de la source
+    double flotPuit, flotSource;         // Flot du puit et de la source
+
     unsigned int getIntensite() const; // Getter sur l'intensité
 
     Arc *getTblArc(const unsigned int i); // Getter sur 1 élément du tableau
 
     void setTblArc(Arc *nouveauTbl[4]); // Setter sur le tableau
+
+    void setMarque(int marque); // Setter sur la marque
+    int getMarque() const; // Getter sur la marque
 
     ~Noeud(); // Destructeur
 };

@@ -23,6 +23,13 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
+
+    vector<pair<int, int>> chemin = trouverChemin();
+    for (unsigned int i = 0; i < chemin.size(); i++)
+    {
+        cout << "chemin.size() : " << chemin.size() << endl;
+        cout << "Source : " << chemin[i].first << " " << "Destination : " << chemin[i].second << endl;
+    }
 }
 
 void GrapheImage::copieImage(const string &nomFichier)
@@ -32,38 +39,76 @@ void GrapheImage::copieImage(const string &nomFichier)
 }
 
 // ------------------- Fonction de recherche d'un chemin entre deux noeuds ------------------- //
-// vector<Noeud *, Noeud *> GrapheImage::trouverChemin(const unsigned int posSource, const unsigned int posPuit)
-// {
-//     queue<int> file;
-//     unordered_set<int> marque;
 
-//     file.push(posSource);
-//     marque.insert(posSource);
+vector<pair<int, int>> GrapheImage::trouverChemin()
+{
+    // Créer une file pour le parcours en largeur
+    queue<int> file;
+    // ajout du premier noeud à la file
+    file.push(0);
+    this->tblNoeuds[file.front()]->setMarque(1);
+    // on marque le noeud parcouru
+    vector<pair<int, int>> chemin;
 
-//     while (!file.empty()) {
-//         unsigned int s = file.front();
-//         file.pop();
-//         cout << s << " "; // Affichage du sommet visité
+    /*
+    ParcoursLargeur(Graphe G, Sommet s):
+       f = CreerFile();
+       f.enfiler(s);
+       marquer(s);
+       tant que la file est non vide
+                s = f.defiler();
+                afficher(s);
+                pour tout voisin t de s dans G
+                         si t non marqué
+                                 f.enfiler(t);
+                                 marquer(t);
+    */
 
-//         if (s == posSource) {
-//             cout << endl << "Puits atteint." << endl;
-//             return;
-//         }
+    while (!file.empty())
+    {
+        Noeud *noeudCourant = this->tblNoeuds[file.front()];
+        int noeudCourantPos = file.front();
+        file.pop();
+        noeudCourant->setMarque(2);
+        if (noeudCourant->capacitePuit > noeudCourant->flotPuit)
+        {
+            chemin.push_back(make_pair(noeudCourantPos, tblNoeuds.size() + 1));
+            cout << "file.front() : " << noeudCourantPos << endl;
+            return chemin;
+        }
 
-//         for (int t : G.adjList[s]) {
-//             if (marque.find(t) == marque.end()) {
-//                 file.push(t);
-//                 marque.insert(t);
-//             }
-//         }
-//     }
+        int j = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if ((noeudCourant->getTblArc(i)->capacite > noeudCourant->getTblArc(i)->flot) && (this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->getMarque() == 0))
+            {
+                file.push(noeudCourant->getTblArc(i)->valeur);
+                this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->setMarque(1);
+            }
+            else
+            {
+                j++;
+            }
+        }
+        chemin.push_back(make_pair(noeudCourantPos, file.front()));
+        if (j == 4)
+        {
+            chemin.pop_back();
+        }
+    }
 
-//     cout << endl << "Puits non atteint à partir de la source." << endl;
-// }
+    // on verifie si la capacité vers le puit est supérieure au flot
+    // si oui on retourne le chemin
+    // si non
+    // on verifie la capacitée vers le voisin
+    // si la capacité est supérieure au flot on ajoute le voisin à la file
+    // si non on passe au voisin suivant
 
+    // si le voisin n'est pas le puit on l'ajoute à la file
+    // si le voisin est le puit on retourne le chemin
 
-
-
+    
+}
 
 // ------------------- Fonction pour calculer les indices globaux  ------------------- //
 unsigned int GrapheImage::posNoeud(const unsigned int i, const unsigned int j) const
@@ -245,7 +290,6 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
     unsigned int j = 0;
     while (fichier >> valeurPixel)
     {
-
         // On vérifie l'intensité
         assert(valeurPixel <= intensiteMax);
 
@@ -271,18 +315,21 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
         }
         i++;
     }
-    //Ajout des capacitées pour chaque arc
-    for(unsigned int i = 0; i < this->tblNoeuds.size(); i++)
+    // Ajout des capacitées pour chaque arc
+    for (unsigned int i = 0; i < this->tblNoeuds.size(); i++)
     {
         // Parcours du tableau de noeud
-        for(unsigned int j = 0; j < 4; j++)
+        for (unsigned int j = 0; j < 4; j++)
         {
-            if(!(this->tblNoeuds[i]->getTblArc(j)->capacite == ERREUR_POS))
+            if (!(this->tblNoeuds[i]->getTblArc(j)->capacite == ERREUR_POS))
             {
                 this->tblNoeuds[i]->getTblArc(j)->capacite = this->calculerCapacite(
-                    i, this->tblNoeuds[i]->getTblArc(j)->valeur); 
+                    i, this->tblNoeuds[i]->getTblArc(j)->valeur);
             }
         }
+
+        this->tblNoeuds[i]->capaciteSource = this->calculerCapacitePS(i, true);
+        this->tblNoeuds[i]->capacitePuit = this->calculerCapacitePS(i, false);
     }
 
     // Fermeture du fichier
@@ -317,19 +364,46 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
 }
 
 // ------------------- Fonction pour calculer les flots ------------------- //
-void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ)
+void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSource)
 {
-    // On récupère la capacité de l'arc P et Q
-    double capPQ = this->tblNoeuds[posP]->getTblArc(posQ)->capacite;
-    // On récupère le flot de l'arc P et Q
-    double flotPQ = this->tblNoeuds[posP]->getTblArc(posQ)->flot;
-    //On récupère le flot de l'arc Q et P
-    double flotQP = this->tblNoeuds[posQ]->getTblArc(posP)->flot;
-    // On incrémente le flot de base avec l'ajout du nouveau flot
+
+    double capPQ, flotPQ, flotQP;
+    // aSource = 1 si on calcule le flot entre la source et un noeud
+    // aSource = 0 si on calcule le flot entre deux noeuds
+    // aSource = -1 si on calcule le flot entre un noeud et le puit
+    if (aSource == 1)
+    {
+        // On récupère la capacité de l'arc P(Source) et Q
+        capPQ = this->tblNoeuds[posP]->capaciteSource;
+        // On récupère le flot de l'arc P(Source) et Q
+        flotPQ = this->tblNoeuds[posP]->flotSource;
+        // On récupère le flot de l'arc Q et P(Source)
+        flotQP = 0;
+    }
+    else if (aSource == 0)
+    {
+        // On récupère la capacité de l'arc P et Q
+        capPQ = this->tblNoeuds[posP]->getTblArc(posQ)->capacite;
+        // On récupère le flot de l'arc P et Q
+        flotPQ = this->tblNoeuds[posP]->getTblArc(posQ)->flot;
+        // On récupère le flot de l'arc Q et P
+        flotQP = this->tblNoeuds[posQ]->getTblArc(posP)->flot;
+    }
+    else if (aSource == -1)
+    {
+        // On récupère la capacité de l'arc P et Q(Puit)
+        capPQ = this->tblNoeuds[posP]->capacitePuit;
+        // On récupère le flot de l'arc P et Q(Puit)
+        flotPQ = this->tblNoeuds[posP]->flotPuit;
+        // On récupère le flot de l'arc Q(Puit) et P
+        flotQP = 0;
+    }
+
     this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP);
 
     // Si le flot le dépasse la capaité on ajoute le trop plein dans l'arc Q et P
-    if(this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ){
+    if (this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ)
+    {
         double flotPlein = this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) - capPQ;
         this->tblNoeuds[posQ]->getTblArc(posP)->flot += flotPlein;
     }
@@ -351,17 +425,17 @@ double GrapheImage::calculerCapacitePos(unsigned int posP, unsigned int posQ)
 
 double GrapheImage::calculerCapacitePS(unsigned int posP, bool aSource)
 {
-    double alpha = 2.0; //Alpha est a définir c'est un paramètre du programme d'après le sujet
+    double alpha = 2.0; // Alpha est a définir c'est un paramètre du programme d'après le sujet
 
     // On calcule la capacite entre la source et un pixel
     if (aSource)
     {
-        return -(alpha * log(255.0-(this->tblNoeuds[posP]->getIntensite())/255.0));
+        return -(alpha * log(255.0 - (this->tblNoeuds[posP]->getIntensite()) / 255.0));
     }
     // On calcule la capacité entre le puit
     else
     {
-        return -(alpha * log((this->tblNoeuds[posP]->getIntensite())/255.0));
+        return -(alpha * log((this->tblNoeuds[posP]->getIntensite()) / 255.0));
     }
 }
 
@@ -462,7 +536,7 @@ void GrapheImage::testImageVersGraphe()
     assert(this->tblNoeuds[2]->getTblArc(3)->valeur == 5);
 
     // Test de la capacité pour 4 arcs
-    //AVEC SIGMA = 4
+    // AVEC SIGMA = 4
     const double epsilon = 0.00001;
 
     // Il faut avoir un sigma plus gros pour ne pas avoir de probleme de petit chiffre qui sont proches de zero
@@ -473,7 +547,7 @@ void GrapheImage::testImageVersGraphe()
     // assert(this->tblNoeuds[0]->getTblArc(1)->capacite ==0);
     assert(this->tblNoeuds[0]->getTblArc(2)->capacite == 0);
     assert(compareDouble(calculerCapacitePos(0, 3), 1.38389 * pow(10, -87), epsilon * pow(10, -87)));
-    
+
     // Ne marche pas car la valeur est trop petite et toutes les calculatrices me renvoie environ 0
     // Mais la fonction renvoie les bons resultats tout marche sauf impossible de savoir les resultats
     // assert(this->tblNoeuds[1]->getTblArc(0)->capacite == 0);
