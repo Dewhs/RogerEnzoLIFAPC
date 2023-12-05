@@ -40,6 +40,7 @@ public:
     double flotPuit, flotSource;         // Flot du puit et de la source
 
     unsigned int getIntensite() const; // Getter sur l'intensité
+    void setIntensite(unsigned int intensite); // Setter sur l'intensité
 
     Arc *getTblArc(const unsigned int i); // Getter sur 1 élément du tableau
 

@@ -67,6 +67,11 @@ unsigned int Noeud::getIntensite() const
     return intensite;
 }
 
+void Noeud::setIntensite(unsigned int intensite)
+{
+    this->intensite = intensite;
+}
+
 Arc *Noeud::getTblArc(const unsigned int i)
 {
     return tblArc[i];

@@ -48,15 +48,20 @@ private:
     int trouverEntree();
     void nettoyageChemin(vector<pair<int, int>> &chemin);
 
-
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
     double calculerCapacitePos(unsigned int posP, unsigned int posQ);
     // Fonction qui calcule la capacité d'un arc entre un noeud et la source ou le puit
     double calculerCapacitePS(unsigned int posP, bool aSource);
 
+    double getMinFlot(vector<pair<int, int>> &chemin);
     // Fonction qui calcule le flot
-    void calculerFlot(unsigned int posP, unsigned int posQ, int aSource);
+    double calculerFlot(unsigned int posP, unsigned int posQ, int aSource);
+    // Incrementer le flot
+    void incrementerFlot(double flot);
+
+
+    void afficherChemin(vector<pair<int, int>> &chemin);
 
     // tests
     void test();
@@ -73,6 +78,8 @@ public:
     GrapheImage(const string &nomFichier);
     void affichageGrille() const;
     void copieImage(const string &nomFichier);
+    // Fonction de binarisation
+    void binarisation(const string &nomFichier);
     ~GrapheImage();
 };
 

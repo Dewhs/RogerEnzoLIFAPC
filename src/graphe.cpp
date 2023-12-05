@@ -23,32 +23,41 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
-    this->tblNoeuds[0]->flotSource = 9999999;
-    this->tblNoeuds[0]->flotPuit = 9999999;
+
+    // ---------------------- TEST ---------------------- //
+
+    // this->tblNoeuds[0]->flotSource = 9999999;
+    // this->tblNoeuds[0]->flotPuit = 9999999;
     // this->tblNoeuds[0]->getTblArc(1)->flot = 9999999;
     // this->tblNoeuds[0]->getTblArc(3)->flot = 9999999;
-    this->tblNoeuds[1]->flotPuit = 9999999;
-    this->tblNoeuds[1]->flotSource = 9999999;
+    // this->tblNoeuds[1]->flotPuit = 9999999;
+    // this->tblNoeuds[1]->flotSource = 9999999;
     // this->tblNoeuds[1]->getTblArc(1)->flot = 9999999;
     // this->tblNoeuds[1]->getTblArc(3)->flot = 9999999;
-    this->tblNoeuds[3]->flotPuit = 9999999;
-    this->tblNoeuds[2]->flotPuit = 9999999;
-    this->tblNoeuds[4]->flotPuit = 9999999;
-    // //this->tblNoeuds[6]->flotPuit = 9999999;
+    // this->tblNoeuds[3]->flotPuit = 9999999;
+    // this->tblNoeuds[2]->flotPuit = 9999999;
+    // this->tblNoeuds[4]->flotPuit = 9999999;
+    // this->tblNoeuds[6]->flotPuit = 9999999;
     // this->tblNoeuds[5]->flotPuit = 9999999;
     // this->tblNoeuds[7]->flotPuit = 9999999;
     // this->tblNoeuds[8]->flotPuit = 9999999;
 
-    vector<pair<int, int>> chemin = trouverChemin();
+    // vector<pair<int, int>> chemin = trouverChemin();
 
-    cout << "chemin.size() : " << chemin.size() << endl;
-    for (unsigned int i = 0; i < chemin.size(); i++)
-    {
-        cout << i << " : " << chemin[i].first << " "
-             << " -> " << chemin[i].second << endl;
-    }
+    // cout << "calculer flot" << endl;
+    // cout << "flot source : " << this->calculerFlot(0, 0, 1) << endl;
+    // cout << "flot puit : " << this->calculerFlot(0, 0, -1) << endl;
 
-    vector<pair<int, int>> chemin2 = trouverChemin();
+    // cout << "calculerMinFlot : " << this->getMinFlot(chemin) << endl;
+
+    // cout << "chemin.size() : " << chemin.size() << endl;
+    // for (unsigned int i = 0; i < chemin.size(); i++)
+    // {
+    //     cout << i << " : " << chemin[i].first << " "
+    //          << " -> " << chemin[i].second << endl;
+    // }
+
+    // afficherChemin(chemin);
 }
 
 void GrapheImage::copieImage(const string &nomFichier)
@@ -149,7 +158,7 @@ void GrapheImage::nettoyageChemin(vector<pair<int, int>> &chemin)
 {
     int tmp = tblNoeuds.size() + 1;
     int cheminSize = chemin.size();
-    for (int i = cheminSize - 1 ; i >= 0; i--)
+    for (int i = cheminSize - 1; i >= 0; i--)
     {
         if (chemin[i].second != tmp)
         {
@@ -185,6 +194,7 @@ unsigned int GrapheImage::posNoeud(const unsigned int i, const unsigned int j) c
 }
 
 // position [i,j] du noeud initial
+
 unsigned int GrapheImage::posOuest(const unsigned int i, const unsigned int j) const
 {
     if (i == 0)
@@ -432,7 +442,7 @@ void GrapheImage::grapheVersImage(const string &nomFichier)
 }
 
 // ------------------- Fonction pour calculer les flots ------------------- //
-void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSource)
+double GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSource)
 {
 
     double capPQ, flotPQ, flotQP;
@@ -442,9 +452,9 @@ void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSource
     if (aSource == 1)
     {
         // On récupère la capacité de l'arc P(Source) et Q
-        capPQ = this->tblNoeuds[posP]->capaciteSource;
+        capPQ = this->tblNoeuds[posQ]->capaciteSource;
         // On récupère le flot de l'arc P(Source) et Q
-        flotPQ = this->tblNoeuds[posP]->flotSource;
+        flotPQ = this->tblNoeuds[posQ]->flotSource;
         // On récupère le flot de l'arc Q et P(Source)
         flotQP = 0;
     }
@@ -467,13 +477,68 @@ void GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSource
         flotQP = 0;
     }
 
-    this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP);
+    // On calcule le flot
+    return capPQ + (flotPQ - flotQP);
 
-    // Si le flot le dépasse la capaité on ajoute le trop plein dans l'arc Q et P
-    if (this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ)
+    // this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP);
+
+    // // Si le flot le dépasse la capaité on ajoute le trop plein dans l'arc Q et P
+    // if (this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ)
+    // {
+    //     double flotPlein = this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) - capPQ;
+    //     this->tblNoeuds[posQ]->getTblArc(posP)->flot += flotPlein;
+    // }
+}
+
+double GrapheImage::getMinFlot(vector<pair<int, int>> &chemin)
+{
+    double minFlot = calculerFlot(0, chemin[0].first, 1);
+    int cheminSize = chemin.size();
+
+    for (int i = 0; i < cheminSize - 2; i++)
     {
-        double flotPlein = this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) - capPQ;
-        this->tblNoeuds[posQ]->getTblArc(posP)->flot += flotPlein;
+        if (calculerFlot(chemin[i].first, chemin[i].second, 0) < minFlot)
+        {
+            minFlot = calculerFlot(chemin[i].first, chemin[i].second, 0);
+        }
+    }
+    if (calculerFlot(chemin[chemin.size() - 1].first, 0, -1) < minFlot)
+    {
+        minFlot = calculerFlot(chemin[chemin.size() - 1].first, 0, -1);
+    }
+    return minFlot;
+}
+
+void GrapheImage::incrementerFlot(double flot)
+{
+    int j = 0;
+    while (j < int(tblNoeuds.size()))
+    {
+        tblNoeuds[j]->flotSource += flot;
+        tblNoeuds[j]->flotPuit += flot;
+        for (int i = 0; i < 4; i++)
+        {
+            tblNoeuds[i]->getTblArc(i)->flot += flot;
+        }
+
+        j++;
+    }
+}
+
+void GrapheImage::afficherChemin(vector<pair<int, int>> &chemin)
+{
+    int cheminSize = chemin.size();
+    if (cheminSize == 0)
+    {
+    }
+    else
+    {
+
+        for (int i = 0; i < cheminSize; i++)
+        {
+            cout << i << " : " << chemin[i].first << " "
+                 << " -> " << chemin[i].second << endl;
+        }
     }
 }
 
@@ -527,6 +592,38 @@ void GrapheImage::affichageGrille() const
     }
     // Ajout du endline (c'est plus jolie)
     cout << "" << endl;
+}
+
+void GrapheImage::binarisation(const string &nomFichier)
+{
+    vector<pair<int, int>> chemin = trouverChemin();
+    double flotOptimal = 0;
+    while (chemin.size() > 0 && chemin[chemin.size() - 1].second == int(tblNoeuds.size()) + 1)
+    {
+        double minFlot = 1;
+        // double minFlot = getMinFlot(chemin);
+        flotOptimal += minFlot;
+        incrementerFlot(minFlot);
+        chemin = trouverChemin();
+        afficherChemin(chemin);
+    }
+    cout << "flot optimal : " << flotOptimal << endl;
+
+    int j = 0;
+    while (j < int(tblNoeuds.size()))
+    {
+        if (flotOptimal < tblNoeuds[j]->capaciteSource)
+        {
+            tblNoeuds[j]->setIntensite(255);
+        }
+        else
+        {
+            tblNoeuds[j]->setIntensite(0);
+        }
+        j++;
+    }
+    intensiteMax = 255;
+    grapheVersImage(nomFichier);
 }
 
 // ------------------- Tests ------------------- //
