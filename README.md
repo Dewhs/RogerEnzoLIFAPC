@@ -2,20 +2,20 @@
 
 ## Conception
 
-Conception on FigJam :
+Conception avec Figjam :
 <https://www.figma.com/file/HxI14LNnPssUnBXXEPSnBu/diagrame_des_classes?type=whiteboard&node-id=0%3A1&t=zAzpCbIxr9VF0aRo-1>
 
-- Example (with real value)
-- class Diagram
+- Exemple (avec des valeurs réels)
+- Diagramme des classes
   
-### Class Diagram
-
-![Preview Class Diagram](https://i.imgur.com/DnvmfwL.png)
+### Diagramme des classes
+![Preview Diagramme des classes](https://i.imgur.com/F0myJYt.png)
 
 ## Compilation
  ### Étape 1 : Ouvrir un terminal et se rendre dans le dossier du projet
 
- ### Étape 2 : Vous devez être dans la racine du projet pour tester
+ ### Étape 2 : Vous devez être dans la racine du projet
+ - Tester avec :
  ```bash
 pwd
 ```
@@ -37,6 +37,15 @@ make clean && make
 - l'ouvrir avec gimp ou autre lecteur d'image
 - comparer les résultats
 
-## Collaborator
+### Explication du makefile
+- Création des dossiers bin et obj (si il n'existe pas)
+- On construit le fichier obj de noeud stocker dans obj
+- On construit le fichier obj de graphe stocker dans obj
+- On construit le fichier obj de main stocker dans obj
+- On construit l'éxecutable à partir des fichiers obj qui est stocker dans le dossier bin
 
-...
+Tips : la commande make clean supprime les fichiers obj et l'éxecutable
+  
+## Collaborator
+Delgado Roger p2208393
+Thiebaud Enzo p2207446
