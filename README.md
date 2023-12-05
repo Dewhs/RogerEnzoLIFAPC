@@ -2,47 +2,47 @@
 
 ## Conception
 
-Conception avec Figjam :
-<https://www.figma.com/file/HxI14LNnPssUnBXXEPSnBu/diagrame_des_classes?type=whiteboard&node-id=0%3A1&t=zAzpCbIxr9VF0aRo-1>
+Conception avec FigJam : [Lien FigmJam](https://www.figma.com/file/HxI14LNnPssUnBXXEPSnBu/diagrame_des_classes?type=whiteboard&node-id=0%3A1&t=zAzpCbIxr9VF0aRo-1)
 
-- Exemple (avec des valeurs réels)
-- Diagramme des classes
-  
+
+![Exemple d'un graphe qui représente une image pgm](https://i.imgur.com/Qc11KIv.png)
+
 ### Diagramme des classes
-![Preview Diagramme des classes](https://i.imgur.com/F0myJYt.png)
+![Aperçu du Diagramme des classes](https://i.imgur.com/F0myJYt.png)
 
 ## Compilation
- ### Étape 1 : Ouvrir un terminal et se rendre dans le dossier du projet
 
- ### Étape 2 : Vous devez être dans la racine du projet
- - Tester avec :
- ```bash
+### Étape 1 : Ouvrir un terminal et se rendre dans le dossier du projet
+
+### Étape 2 : Vous devez être dans la racine du projet
+- Tester avec :
+```bash
 pwd
 ```
-### Étape 3 : Entrez la commande make pour build le projet (Vous devez être dans la racine du projet important)
+### Étape 3 : Entrez la commande make pour build le projet (Vous devez être dans la racine du projet, c'est important)
 ```bash
 make clean && make
 ```
-### Étape 4 : lancement du projet (éxecution)
+### Étape 4 : Lancement du projet (exécution)
 ```bash
 ./bin/MonProgramme
 ```
 ### Étape 5 : Voir le résultats 
-- Ouvrir votre explorateur de fichier
+- Ouvrez votre explorateur de fichiers
 - Rendez-vous dans le dossier du projet
-- clique droit sur 'imagePgmInitial'
-- l'ouvrir avec gimp ou autre lecteur d'image
-- retourner dans votre explorateur de fichier
-- clique droit sur 'imagePgmBin'
-- l'ouvrir avec gimp ou autre lecteur d'image
-- comparer les résultats
+- Cliquez-droit sur 'imagePgmInitial'
+- Ouvrez-le avec GIMP ou un autre lecteur d'images
+- Retournez dans votre explorateur de fichiers
+- Cliquez-droit sur 'imagePgmBin'
+- Ouvrez-le avec GIMP ou un autre lecteur d'images
+- Comparez les résultats
 
 ### Explication du makefile
-- Création des dossiers bin et obj (si il n'existe pas)
-- On construit le fichier obj de noeud stocker dans obj
-- On construit le fichier obj de graphe stocker dans obj
-- On construit le fichier obj de main stocker dans obj
-- On construit l'éxecutable à partir des fichiers obj qui est stocker dans le dossier bin
+- Création des dossiers 'bin' et 'obj' (s'ils n'existent pas)
+- Construction du fichier objet 'noeud' stocké dans 'obj'
+- Construction du fichier objet 'graphe' stocké dans 'obj'
+- Construction du fichier objet 'main' stocké dans 'obj'
+- Construction de l'exécutable à partir des fichiers objet, qui est stocké dans le dossier 'bin'
 
 Tips : la commande make clean supprime les fichiers obj et l'éxecutable
   
