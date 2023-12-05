@@ -45,6 +45,9 @@ private:
     // retourne un vecteur de pair contenant le chemin
     vector<pair<int, int>> trouverChemin();
 
+    int trouverEntree();
+    void nettoyageChemin(vector<pair<int, int>> &chemin);
+
 
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);

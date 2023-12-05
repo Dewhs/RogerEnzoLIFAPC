@@ -23,13 +23,32 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
+    this->tblNoeuds[0]->flotSource = 9999999;
+    this->tblNoeuds[0]->flotPuit = 9999999;
+    // this->tblNoeuds[0]->getTblArc(1)->flot = 9999999;
+    // this->tblNoeuds[0]->getTblArc(3)->flot = 9999999;
+    this->tblNoeuds[1]->flotPuit = 9999999;
+    this->tblNoeuds[1]->flotSource = 9999999;
+    // this->tblNoeuds[1]->getTblArc(1)->flot = 9999999;
+    // this->tblNoeuds[1]->getTblArc(3)->flot = 9999999;
+    this->tblNoeuds[3]->flotPuit = 9999999;
+    this->tblNoeuds[2]->flotPuit = 9999999;
+    this->tblNoeuds[4]->flotPuit = 9999999;
+    // //this->tblNoeuds[6]->flotPuit = 9999999;
+    // this->tblNoeuds[5]->flotPuit = 9999999;
+    // this->tblNoeuds[7]->flotPuit = 9999999;
+    // this->tblNoeuds[8]->flotPuit = 9999999;
 
     vector<pair<int, int>> chemin = trouverChemin();
+
+    cout << "chemin.size() : " << chemin.size() << endl;
     for (unsigned int i = 0; i < chemin.size(); i++)
     {
-        cout << "chemin.size() : " << chemin.size() << endl;
-        cout << "Source : " << chemin[i].first << " " << "Destination : " << chemin[i].second << endl;
+        cout << i << " : " << chemin[i].first << " "
+             << " -> " << chemin[i].second << endl;
     }
+
+    vector<pair<int, int>> chemin2 = trouverChemin();
 }
 
 void GrapheImage::copieImage(const string &nomFichier)
@@ -42,72 +61,121 @@ void GrapheImage::copieImage(const string &nomFichier)
 
 vector<pair<int, int>> GrapheImage::trouverChemin()
 {
-    // Créer une file pour le parcours en largeur
+    // on crée la file qui va contenir les noeuds à visiter
+    // on crée un vecteur de pair qui va contenir le chemin
     queue<int> file;
-    // ajout du premier noeud à la file
-    file.push(0);
-    this->tblNoeuds[file.front()]->setMarque(1);
-    // on marque le noeud parcouru
     vector<pair<int, int>> chemin;
 
-    /*
-    ParcoursLargeur(Graphe G, Sommet s):
-       f = CreerFile();
-       f.enfiler(s);
-       marquer(s);
-       tant que la file est non vide
-                s = f.defiler();
-                afficher(s);
-                pour tout voisin t de s dans G
-                         si t non marqué
-                                 f.enfiler(t);
-                                 marquer(t);
-    */
+    // on verifie que la capcaié de la source est bien supérieur au flot
+    // tant que la capacité de la source est inferieur au flot et que la valeur de la position globale du noeud d'entrée est inferieur à la taille du tableau de noeud
+    // on incrémente de 1 la valeur de la position globale du noeud d'entrée
 
+    int indiceNoeud = trouverEntree();
+    if (indiceNoeud == -1)
+    {
+        return chemin;
+    }
+    file.push(indiceNoeud);
+
+    // on a notre position globale du noeud d'entrée
+
+    // on peut commencer notre recherche de chemin
+    // les noeuds vue sont marqués à 1
+    // les noeuds visités sont marqués à 2
+
+    // tant que la file n'est pas vide
     while (!file.empty())
     {
-        Noeud *noeudCourant = this->tblNoeuds[file.front()];
-        int noeudCourantPos = file.front();
+        // on récupère le noeud en tête de file
+        int indiceNoeud = file.front();
+        // on le supprime de la file
         file.pop();
-        noeudCourant->setMarque(2);
-        if (noeudCourant->capacitePuit > noeudCourant->flotPuit)
+
+        // on le marque comme visité
+        this->tblNoeuds[indiceNoeud]->setMarque(2);
+        // on verifie si la capacitePuit > flotPuit
+        if (this->tblNoeuds[indiceNoeud]->capacitePuit > this->tblNoeuds[indiceNoeud]->flotPuit)
         {
-            chemin.push_back(make_pair(noeudCourantPos, tblNoeuds.size() + 1));
-            cout << "file.front() : " << noeudCourantPos << endl;
+            // si oui on ajoute le noeud au chemin et on retourne le chemin
+            chemin.push_back(make_pair(indiceNoeud, this->tblNoeuds.size() + 1));
+            nettoyageChemin(chemin);
             return chemin;
         }
 
         int j = 0;
-        for (int i = 0; i < 4; i++)
+        // sinon on ajoute les noeud voisins non vue et non visité à la file
+        for (unsigned int i = 0; i < 4; i++)
         {
-            if ((noeudCourant->getTblArc(i)->capacite > noeudCourant->getTblArc(i)->flot) && (this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->getMarque() == 0))
+            j++;
+            if (this->tblNoeuds[indiceNoeud]->getTblArc(i)->valeur != ERREUR_POS)
             {
-                file.push(noeudCourant->getTblArc(i)->valeur);
-                this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->setMarque(1);
-            }
-            else
-            {
-                j++;
+                if (this->tblNoeuds[this->tblNoeuds[indiceNoeud]->getTblArc(i)->valeur]->getMarque() == 0)
+                {
+                    j--;
+                    file.push(this->tblNoeuds[indiceNoeud]->getTblArc(i)->valeur);
+                    chemin.push_back(make_pair(indiceNoeud, this->tblNoeuds[indiceNoeud]->getTblArc(i)->valeur));
+                    // on les marque comme vue
+                    this->tblNoeuds[this->tblNoeuds[indiceNoeud]->getTblArc(i)->valeur]->setMarque(1);
+                }
             }
         }
-        chemin.push_back(make_pair(noeudCourantPos, file.front()));
+        // si j = 4 alors on a pas de voisin non vue et non visité
         if (j == 4)
         {
-            chemin.pop_back();
+            // on marque le noeud comme visité
+            this->tblNoeuds[indiceNoeud]->setMarque(2);
+
+            // on clear la file
+            while (!file.empty())
+            {
+                file.pop();
+            }
+
+            indiceNoeud = trouverEntree();
+            if (indiceNoeud == -1)
+            {
+                return chemin;
+            }
+            file.push(indiceNoeud);
         }
+        // fin de la boucle
     }
 
-    // on verifie si la capacité vers le puit est supérieure au flot
-    // si oui on retourne le chemin
-    // si non
-    // on verifie la capacitée vers le voisin
-    // si la capacité est supérieure au flot on ajoute le voisin à la file
-    // si non on passe au voisin suivant
+    // on retourne un vecteur vide
+    return chemin;
+}
 
-    // si le voisin n'est pas le puit on l'ajoute à la file
-    // si le voisin est le puit on retourne le chemin
+void GrapheImage::nettoyageChemin(vector<pair<int, int>> &chemin)
+{
+    int tmp = tblNoeuds.size() + 1;
+    int cheminSize = chemin.size();
+    for (int i = cheminSize - 1 ; i >= 0; i--)
+    {
+        if (chemin[i].second != tmp)
+        {
+            chemin.erase(chemin.begin() + i);
+        }
+        else
+        {
+            tmp = chemin[i].first;
+        }
+    }
+}
 
-    
+int GrapheImage::trouverEntree()
+{
+    // on cherche le noeud d'entrée
+    for (unsigned int i = 0; i < this->tblNoeuds.size(); i++)
+    {
+        // si la capacité de la source est supérieur au flot de la source
+        if (this->tblNoeuds[i]->capaciteSource > this->tblNoeuds[i]->flotSource && this->tblNoeuds[i]->getMarque() == 0)
+        {
+            // on retourne la position globale du noeud d'entrée
+            return i;
+        }
+    }
+    // sinon on retourne -1
+    return -1;
 }
 
 // ------------------- Fonction pour calculer les indices globaux  ------------------- //
@@ -430,7 +498,7 @@ double GrapheImage::calculerCapacitePS(unsigned int posP, bool aSource)
     // On calcule la capacite entre la source et un pixel
     if (aSource)
     {
-        return -(alpha * log(255.0 - (this->tblNoeuds[posP]->getIntensite()) / 255.0));
+        return -(alpha * log((255.0 - this->tblNoeuds[posP]->getIntensite()) / 255.0));
     }
     // On calcule la capacité entre le puit
     else
@@ -675,3 +743,119 @@ bool GrapheImage::compareDouble(double a, double b, double epsilon)
 
      // tblNoeuds.push_back(new Noeud(intensites[i]));
  }*/
+
+/*
+
+// Créer une file pour le parcours en largeur
+    queue<int> file;
+    // ajout du premier noeud à la file
+    file.push(0);
+    this->tblNoeuds[file.front()]->setMarque(1);
+
+    while (this->tblNoeuds[file.front()]->capaciteSource < this->tblNoeuds[file.front()]->flotSource)
+    {
+        cout << "file.front() : " << file.front() << endl;
+        // cout << "flotSource : " << this->tblNoeuds[file.front()]->flotSource << endl;
+        // cout << "capaciteSource : " << this->tblNoeuds[file.front()]->capaciteSource << endl;
+        // cout << "capacite < flot : " << (this->tblNoeuds[file.front()]->capaciteSource < this->tblNoeuds[file.front()]->flotSource) << endl;
+        if (file.front() >= int(this->tblNoeuds.size() - 1))
+        {
+            return vector<pair<int, int>>();
+        }
+        int courant = file.front();
+        cout << "courant : " << courant << endl;
+        file.pop();
+        file.push(courant+1);
+    }
+    // on marque le noeud parcouru
+    vector<pair<int, int>> chemin;*/
+
+/*
+ParcoursLargeur(Graphe G, Sommet s):
+   f = CreerFile();
+   f.enfiler(s);
+   marquer(s);
+   tant que la file est non vide
+            s = f.defiler();
+            afficher(s);
+            pour tout voisin t de s dans G
+                     si t non marqué
+                             f.enfiler(t);
+                             marquer(t);
+*/
+
+/*while (!file.empty())
+{
+    Noeud *noeudCourant = this->tblNoeuds[file.front()];
+    int noeudCourantPos = file.front();
+    file.pop();
+    noeudCourant->setMarque(2);
+    if (noeudCourant->capacitePuit > noeudCourant->flotPuit)
+    {
+        chemin.push_back(make_pair(noeudCourantPos, tblNoeuds.size() + 1));
+        cout << "file.front() : " << noeudCourantPos << endl;
+        return chemin;
+    }
+
+    int j = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if ((noeudCourant->getTblArc(i)->capacite > noeudCourant->getTblArc(i)->flot) && (this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->getMarque() == 0))
+        {
+            file.push(noeudCourant->getTblArc(i)->valeur);
+            this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->setMarque(1);
+        }
+        else
+        {
+            j++;
+        }
+    }
+    chemin.push_back(make_pair(noeudCourantPos, file.front()));
+    if (j == 4)
+    {
+        chemin.pop_back();
+        if (chemin.size() == 0)
+        {
+           file.push(noeudCourantPos + 1);
+        }
+
+    }
+}
+
+// on verifie si la capacité vers le puit est supérieure au flot
+// si oui on retourne le chemin
+// si non
+// on verifie la capacitée vers le voisin
+// si la capacité est supérieure au flot on ajoute le voisin à la file
+// si non on passe au voisin suivant
+
+// si le voisin n'est pas le puit on l'ajoute à la file
+// si le voisin est le puit on retourne le chemin
+return chemin;
+
+
+*/
+
+// on verifie que la capcaié de la source est bien supérieur au flot
+// tant que la capacité de la source est inferieur au flot et que la valeur de la position globale du noeud d'entrée est inferieur à la taille du tableau de noeud
+// on incrémente de 1 la valeur de la position globale du noeud d'entrée
+
+// on a notre position globale du noeud d'entrée
+// on peut commencer notre recherche de chemin
+// on crée un vecteur de pair qui va contenir le chemin
+// on crée la file qui va contenir les noeuds à visiter
+// les noeuds vue sont marqués à 1
+// les noeuds visités sont marqués à 2
+// on ajoute le noeud d'entrée à la file
+
+// tant que la file n'est pas vide
+// on récupère le noeud en tête de file
+// on le marque comme visité
+// on verifie si la capacitePuit > flotPuit
+// si oui on ajoute le noeud au chemin et on retourne le chemin
+// sinon on ajoute les noeud voisins non vue et non visité à la file
+// on les marque comme vue
+// on ajoute le noeud au chemin
+// fin de la boucle
+
+// on retourne un vecteur vide
