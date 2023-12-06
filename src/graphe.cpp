@@ -23,7 +23,7 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
-    this->binarisation("Binariser");
+    this->binarisation("imgBinariser/Binariser");
 
     // ---------------------- TEST ---------------------- //
 
@@ -824,115 +824,11 @@ bool GrapheImage::compareDouble(double a, double b, double epsilon)
     return fabs(a - b) < epsilon;
 }
 
-// Test assignation
-/*for (unsigned int i = 0; i < 9; i++)
- {
-     if (i == 0)
-     {
-         double ouest = calculerCapacite(intensites[i], intensites[i + 1]);
-         double est = ERREUR_POS;
-         double nord = ERREUR_POS;
-         double sud = calculerCapacite(intensites[i], intensites[i + int(sqrt(testSize))]);
-         cout << "Ouest : " << ouest << endl;
-         cout << "Est : " << est << endl;
-         cout << "Nord : " << nord << endl;
-         cout << "Sud : " << sud << endl;
-     }
-
-     // tblNoeuds.push_back(new Noeud(intensites[i]));
- }*/
-
-/*
-
-// Créer une file pour le parcours en largeur
-    queue<int> file;
-    // ajout du premier noeud à la file
-    file.push(0);
-    this->tblNoeuds[file.front()]->setMarque(1);
-
-    while (this->tblNoeuds[file.front()]->capaciteSource < this->tblNoeuds[file.front()]->flotSource)
-    {
-        cout << "file.front() : " << file.front() << endl;
-        // cout << "flotSource : " << this->tblNoeuds[file.front()]->flotSource << endl;
-        // cout << "capaciteSource : " << this->tblNoeuds[file.front()]->capaciteSource << endl;
-        // cout << "capacite < flot : " << (this->tblNoeuds[file.front()]->capaciteSource < this->tblNoeuds[file.front()]->flotSource) << endl;
-        if (file.front() >= int(this->tblNoeuds.size() - 1))
-        {
-            return vector<pair<int, int>>();
-        }
-        int courant = file.front();
-        cout << "courant : " << courant << endl;
-        file.pop();
-        file.push(courant+1);
-    }
-    // on marque le noeud parcouru
-    vector<pair<int, int>> chemin;*/
-
-/*
-ParcoursLargeur(Graphe G, Sommet s):
-   f = CreerFile();
-   f.enfiler(s);
-   marquer(s);
-   tant que la file est non vide
-            s = f.defiler();
-            afficher(s);
-            pour tout voisin t de s dans G
-                     si t non marqué
-                             f.enfiler(t);
-                             marquer(t);
-*/
-
-/*while (!file.empty())
-{
-    Noeud *noeudCourant = this->tblNoeuds[file.front()];
-    int noeudCourantPos = file.front();
-    file.pop();
-    noeudCourant->setMarque(2);
-    if (noeudCourant->capacitePuit > noeudCourant->flotPuit)
-    {
-        chemin.push_back(make_pair(noeudCourantPos, tblNoeuds.size() + 1));
-        cout << "file.front() : " << noeudCourantPos << endl;
-        return chemin;
-    }
-
-    int j = 0;
-    for (int i = 0; i < 4; i++)
-    {
-        if ((noeudCourant->getTblArc(i)->capacite > noeudCourant->getTblArc(i)->flot) && (this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->getMarque() == 0))
-        {
-            file.push(noeudCourant->getTblArc(i)->valeur);
-            this->tblNoeuds[noeudCourant->getTblArc(i)->valeur]->setMarque(1);
-        }
-        else
-        {
-            j++;
-        }
-    }
-    chemin.push_back(make_pair(noeudCourantPos, file.front()));
-    if (j == 4)
-    {
-        chemin.pop_back();
-        if (chemin.size() == 0)
-        {
-           file.push(noeudCourantPos + 1);
-        }
-
-    }
-}
-
-// on verifie si la capacité vers le puit est supérieure au flot
-// si oui on retourne le chemin
-// si non
-// on verifie la capacitée vers le voisin
-// si la capacité est supérieure au flot on ajoute le voisin à la file
-// si non on passe au voisin suivant
-
-// si le voisin n'est pas le puit on l'ajoute à la file
-// si le voisin est le puit on retourne le chemin
-return chemin;
 
 
-*/
+
+
+// ------------------- Algo recherche de chemin -------------------
 
 // on verifie que la capcaié de la source est bien supérieur au flot
 // tant que la capacité de la source est inferieur au flot et que la valeur de la position globale du noeud d'entrée est inferieur à la taille du tableau de noeud
