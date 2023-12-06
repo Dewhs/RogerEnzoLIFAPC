@@ -11,10 +11,10 @@ class GrapheImage
 {
 private:
 #define ERREUR_POS 65535
-    unsigned int largeur, hauteur, intensiteMax;
-
+    
     // Données-membres
     vector<Noeud *> tblNoeuds;
+    unsigned int largeur, hauteur, intensiteMax;
 
     // Fonction qui calcule l'indice d'un noeud dans le tableau
     // à partir de la position [i,j]
@@ -43,43 +43,63 @@ private:
 
     // Fonction de recherche d'un chemin entre deux noeuds
     // retourne un vecteur de pair contenant le chemin
-    vector<pair<int, int>> trouverChemin();
+    vector<pair <int, int> > trouverChemin();
 
+    // Fonction qui permet le premier noeud d'entre si l'arc entre la source et un noeud est saturé
     int trouverEntree();
-    void nettoyageChemin(vector<pair<int, int>> &chemin);
+
+    //Fonction qui supprime ...
+    void nettoyageChemin(vector<pair <int, int> > &chemin);
 
     // Fonction qui calcule la capacité d'un arc
     double calculerCapacite(int intensiteP, int intensiteQ);
     double calculerCapacitePos(unsigned int posP, unsigned int posQ);
+
     // Fonction qui calcule la capacité d'un arc entre un noeud et la source ou le puit
     double calculerCapacitePS(unsigned int posP, bool aSource);
 
-    double getMinFlot(vector<pair<int, int>> &chemin);
+    //Fonction qui récupere le flot minimum sur le chemin
+    double getMinFlot(vector<pair <int, int> > &chemin);
+
     // Fonction qui calcule le flot
     double calculerFlot(unsigned int posP, unsigned int posQ, int aSource);
+
     // Incrementer le flot
     void incrementerFlot(double flot);
 
-
-    void afficherChemin(vector<pair<int, int>> &chemin);
+    //Affiche le chemin (affiche le chemin du premier noeud vers le puits noté 10)
+    void afficherChemin(vector<pair <int, int> > &chemin);
 
     // tests
     void test();
+
     void testCalculPosNoeud();
+
     void testCalculVoisins();
+
     void testImageVersGraphe();
+
     void testCalculerCapacite();
+
+    void testBinarisation();
 
     // Cette fonction est la pour le moment mais je la mettrai dans un fichier outils.h ou quelque chose du genre
     bool compareDouble(double a, double b, double epsilon);
 
 public:
+    //Constructeur par default
     GrapheImage();
+
+    // Constructeur avec une image
     GrapheImage(const string &nomFichier);
+
+    // Fonction qui affiche une image dans le terminal
     void affichageGrille() const;
-    void copieImage(const string &nomFichier);
+
     // Fonction de binarisation
     void binarisation(const string &nomFichier);
+
+    //Destructeur
     ~GrapheImage();
 };
 

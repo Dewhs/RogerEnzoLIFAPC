@@ -13,7 +13,7 @@ using namespace std;
 
 GrapheImage::GrapheImage()
 {
-    cout << "GrapheImage" << endl;
+    // On appelle les tests
     test();
     largeur = 0;
     hauteur = 0;
@@ -23,6 +23,7 @@ GrapheImage::GrapheImage()
 GrapheImage::GrapheImage(const string &nomFichier)
 {
     this->imageVersGraphe(nomFichier);
+    this->binarisation("Binariser");
 
     // ---------------------- TEST ---------------------- //
 
@@ -60,20 +61,14 @@ GrapheImage::GrapheImage(const string &nomFichier)
     // afficherChemin(chemin);
 }
 
-void GrapheImage::copieImage(const string &nomFichier)
-{
-    this->imageVersGraphe(nomFichier);
-    this->grapheVersImage(nomFichier);
-}
-
 // ------------------- Fonction de recherche d'un chemin entre deux noeuds ------------------- //
 
-vector<pair<int, int>> GrapheImage::trouverChemin()
+vector<pair <int, int> > GrapheImage::trouverChemin()
 {
     // on crée la file qui va contenir les noeuds à visiter
     // on crée un vecteur de pair qui va contenir le chemin
     queue<int> file;
-    vector<pair<int, int>> chemin;
+    vector<pair <int, int> > chemin;
 
     // on verifie que la capcaié de la source est bien supérieur au flot
     // tant que la capacité de la source est inferieur au flot et que la valeur de la position globale du noeud d'entrée est inferieur à la taille du tableau de noeud
@@ -107,7 +102,7 @@ vector<pair<int, int>> GrapheImage::trouverChemin()
         {
             // si oui on ajoute le noeud au chemin et on retourne le chemin
             chemin.push_back(make_pair(indiceNoeud, this->tblNoeuds.size() + 1));
-            nettoyageChemin(chemin);
+            this->nettoyageChemin(chemin);
             return chemin;
         }
 
@@ -140,7 +135,7 @@ vector<pair<int, int>> GrapheImage::trouverChemin()
                 file.pop();
             }
 
-            indiceNoeud = trouverEntree();
+            indiceNoeud = this->trouverEntree();
             if (indiceNoeud == -1)
             {
                 return chemin;
@@ -154,9 +149,9 @@ vector<pair<int, int>> GrapheImage::trouverChemin()
     return chemin;
 }
 
-void GrapheImage::nettoyageChemin(vector<pair<int, int>> &chemin)
+void GrapheImage::nettoyageChemin(vector<pair <int, int> > &chemin)
 {
-    int tmp = tblNoeuds.size() + 1;
+    int tmp = this->tblNoeuds.size() + 1;
     int cheminSize = chemin.size();
     for (int i = cheminSize - 1; i >= 0; i--)
     {
@@ -194,7 +189,6 @@ unsigned int GrapheImage::posNoeud(const unsigned int i, const unsigned int j) c
 }
 
 // position [i,j] du noeud initial
-
 unsigned int GrapheImage::posOuest(const unsigned int i, const unsigned int j) const
 {
     if (i == 0)
@@ -417,7 +411,7 @@ void GrapheImage::imageVersGraphe(const string &nomFichier)
 void GrapheImage::grapheVersImage(const string &nomFichier)
 {
     // Ouverture du fichier en écriture
-    ofstream fichier(nomFichier.substr(0, nomFichier.find_last_of(".")) + "Copie.pgm", std::ios::binary);
+    ofstream fichier(nomFichier.substr(0, nomFichier.find_last_of(".")) + ".pgm", std::ios::binary);
 
     // Vérification si l'ouverture du fichier a réussi
     if (!fichier.is_open())
@@ -467,7 +461,7 @@ double GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSour
         // On récupère le flot de l'arc Q et P
         flotQP = this->tblNoeuds[posQ]->getTblArc(posP)->flot;
     }
-    else if (aSource == -1)
+    else
     {
         // On récupère la capacité de l'arc P et Q(Puit)
         capPQ = this->tblNoeuds[posP]->capacitePuit;
@@ -480,31 +474,23 @@ double GrapheImage::calculerFlot(unsigned int posP, unsigned int posQ, int aSour
     // On calcule le flot
     return capPQ + (flotPQ - flotQP);
 
-    // this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP);
-
-    // // Si le flot le dépasse la capaité on ajoute le trop plein dans l'arc Q et P
-    // if (this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) > capPQ)
-    // {
-    //     double flotPlein = this->tblNoeuds[posP]->getTblArc(posQ)->flot += capPQ + (flotPQ - flotQP) - capPQ;
-    //     this->tblNoeuds[posQ]->getTblArc(posP)->flot += flotPlein;
-    // }
 }
 
-double GrapheImage::getMinFlot(vector<pair<int, int>> &chemin)
+double GrapheImage::getMinFlot(vector<pair <int, int> > &chemin)
 {
-    double minFlot = calculerFlot(0, chemin[0].first, 1);
+    double minFlot = this->calculerFlot(0, chemin[0].first, 1);
     int cheminSize = chemin.size();
 
     for (int i = 0; i < cheminSize - 2; i++)
     {
-        if (calculerFlot(chemin[i].first, chemin[i].second, 0) < minFlot)
+        if (this->calculerFlot(chemin[i].first, chemin[i].second, 0) < minFlot)
         {
-            minFlot = calculerFlot(chemin[i].first, chemin[i].second, 0);
+            minFlot = this->calculerFlot(chemin[i].first, chemin[i].second, 0);
         }
     }
-    if (calculerFlot(chemin[chemin.size() - 1].first, 0, -1) < minFlot)
+    if (this->calculerFlot(chemin[chemin.size() - 1].first, 0, -1) < minFlot)
     {
-        minFlot = calculerFlot(chemin[chemin.size() - 1].first, 0, -1);
+        minFlot = this->calculerFlot(chemin[chemin.size() - 1].first, 0, -1);
     }
     return minFlot;
 }
@@ -525,15 +511,11 @@ void GrapheImage::incrementerFlot(double flot)
     }
 }
 
-void GrapheImage::afficherChemin(vector<pair<int, int>> &chemin)
+void GrapheImage::afficherChemin(vector<pair <int, int> > &chemin)
 {
     int cheminSize = chemin.size();
-    if (cheminSize == 0)
+    if (cheminSize > 0)
     {
-    }
-    else
-    {
-
         for (int i = 0; i < cheminSize; i++)
         {
             cout << i << " : " << chemin[i].first << " "
@@ -545,8 +527,7 @@ void GrapheImage::afficherChemin(vector<pair<int, int>> &chemin)
 // ------------------- Fonction pour calculer les capacitées ------------------- //
 double GrapheImage::calculerCapacite(int intensiteP, int intensiteQ)
 {
-    // Ne pas oublier le H
-    // Je pense qu'il faut faire un lround ici c'est une capacité donc un int mais on en repalera
+
     int sigma = 1;
     return exp(-pow(intensiteP - intensiteQ, 2) / (2 * pow(sigma, 2)));
 }
@@ -596,34 +577,32 @@ void GrapheImage::affichageGrille() const
 
 void GrapheImage::binarisation(const string &nomFichier)
 {
-    vector<pair<int, int>> chemin = trouverChemin();
+    vector<pair <int, int> > chemin = this->trouverChemin();
     double flotOptimal = 0;
-    while (chemin.size() > 0 && chemin[chemin.size() - 1].second == int(tblNoeuds.size()) + 1)
+    while (chemin.size() > 0 && chemin[chemin.size() - 1].second == int(this->tblNoeuds.size()) + 1)
     {
         double minFlot = 1;
         // double minFlot = getMinFlot(chemin);
         flotOptimal += minFlot;
-        incrementerFlot(minFlot);
-        chemin = trouverChemin();
-        afficherChemin(chemin);
+        this->incrementerFlot(minFlot);
+        chemin = this->trouverChemin();
     }
-    cout << "flot optimal : " << flotOptimal << endl;
 
     int j = 0;
     while (j < int(tblNoeuds.size()))
     {
-        if (flotOptimal < tblNoeuds[j]->capaciteSource)
+        if (flotOptimal < this->tblNoeuds[j]->capaciteSource)
         {
-            tblNoeuds[j]->setIntensite(255);
+            this->tblNoeuds[j]->setIntensite(255);
         }
         else
         {
-            tblNoeuds[j]->setIntensite(0);
+            this->tblNoeuds[j]->setIntensite(0);
         }
         j++;
     }
-    intensiteMax = 255;
-    grapheVersImage(nomFichier);
+    this->intensiteMax = 255;
+    this->grapheVersImage(nomFichier);
 }
 
 // ------------------- Tests ------------------- //
@@ -680,7 +659,7 @@ void GrapheImage::testCalculPosNoeud()
 
 void GrapheImage::testImageVersGraphe()
 {
-    this->imageVersGraphe("src/imagePgmTest.pgm");
+    this->imageVersGraphe("imgTest/imagePgmTest.pgm");
 
     // Test de la lecture du fichier (début)
     assert(this->tblNoeuds[0]->getIntensite() == 200);
@@ -704,22 +683,19 @@ void GrapheImage::testImageVersGraphe()
     // AVEC SIGMA = 4
     const double epsilon = 0.00001;
 
-    // Il faut avoir un sigma plus gros pour ne pas avoir de probleme de petit chiffre qui sont proches de zero
-
     assert(this->tblNoeuds[0]->getTblArc(0)->capacite == 0);
-    // Ne marche pas car la valeur est trop petite et toutes les calculatrices me renvoie environ 0
-    // Mais la fonction renvoie les bons resultats tout marche sauf impossible de savoir les resultats
+
     // assert(this->tblNoeuds[0]->getTblArc(1)->capacite ==0);
     assert(this->tblNoeuds[0]->getTblArc(2)->capacite == 0);
     assert(compareDouble(calculerCapacitePos(0, 3), 1.38389 * pow(10, -87), epsilon * pow(10, -87)));
 
-    // Ne marche pas car la valeur est trop petite et toutes les calculatrices me renvoie environ 0
-    // Mais la fonction renvoie les bons resultats tout marche sauf impossible de savoir les resultats
     // assert(this->tblNoeuds[1]->getTblArc(0)->capacite == 0);
     // assert(this->tblNoeuds[1]->getTblArc(1)->capacite == 0);
     assert(this->tblNoeuds[1]->getTblArc(2)->capacite == 0);
     assert(compareDouble(calculerCapacitePos(1, 4), 1.38389 * pow(10, -87), epsilon * pow(10, -87)));
-
+    
+    //On vide le tableau
+    this->tblNoeuds.clear();
     cout << "[OK] Image vers Graphe !" << endl;
 }
 
@@ -789,6 +765,30 @@ void GrapheImage::testCalculVoisins()
     cout << "[OK] Calcul voisin !" << endl;
 }
 
+void GrapheImage::testBinarisation(){
+    //Appelle de la fonction imageVersGraphe pour avoir une image de test
+    this->imageVersGraphe("imgTest/imagePgmTest.pgm");
+
+    this->binarisation("imagePgmTest.pgm");
+
+    // Utilisation de remove pour supprimer le fichier
+    if (remove("imagePgmTest.pgm") != 0) {
+        perror("Erreur lors de la suppression du fichier"); // Affiche l'erreur si la suppression échoue
+    } else {
+        cout << "Fichier test supprimer !" << endl;
+    }
+
+    for(unsigned int i = 0; i < this->tblNoeuds.size(); i++)
+    {
+        // On test si chaque pixel est soit égale a 0 ou a 255
+        assert(this->tblNoeuds[i]->getIntensite() == 255 || this->tblNoeuds[i]->getIntensite() == 0);
+    }
+
+    this->tblNoeuds.clear();
+
+    cout << "[Ok] Binarisation !" << endl;
+}
+
 void GrapheImage::test()
 {
     cout << "##############################" << endl;
@@ -798,6 +798,7 @@ void GrapheImage::test()
     testImageVersGraphe();
     testCalculVoisins();
     testCalculerCapacite();
+    testBinarisation();
 
     cout << "--------------------------" << endl;
     cout << "[OK] All test passed !" << endl;
